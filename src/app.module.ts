@@ -10,8 +10,8 @@ import { UploadModule } from './upload/upload.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.local',
-      // envFilePath: '.env.prod'
+      // envFilePath: '.env.local',
+      envFilePath: '.env.prod'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
