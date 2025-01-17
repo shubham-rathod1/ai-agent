@@ -12,6 +12,11 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  // setInterval(() => {
+  //   const used = process.memoryUsage();
+  //   console.log(`Memory Usage: RSS=${(used.rss / 1024 / 1024).toFixed(2)} MB`);
+  // }, 5000);
+
   await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();
