@@ -10,12 +10,31 @@ export class Agent {
   id: string;
   @Column({ unique: true })
   name: string;
+  @Column('text', { array: true })
+  instructions: string[];
+  @Column()
+  personality: string;
   @Column({ type: 'jsonb' })
   token: Token;
   @Column()
   pic: string;
+  @Column({ type: 'jsonb', nullable: true })
+  telegram?: {
+    botToken: string;
+  };
+
+  @Column({ type: 'jsonb', nullable: true })
+  discord?: {
+    botToken: string;
+  };
+
+  @Column({ type: 'jsonb', nullable: true })
+  x?: {
+    id: string;
+    username: string;
+  };
   @Column()
-  bio: string;
+  desc: string;
   @Column()
   typ: AgentType;
   @Column({ nullable: true })
@@ -25,10 +44,4 @@ export class Agent {
   generateId() {
     this.id = crypto.randomBytes(8).toString('hex');
   }
-  //   @BeforeInsert()
-  //   validateTokenAddress() {
-  //     if (!utils.isAddress(this.tCAddress)) {
-  //       throw new Error('Invalid token address format.');
-  //     }
-  //   }
 }

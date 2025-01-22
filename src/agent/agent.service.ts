@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AgentDto } from './dto/agent.dto';
+import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Agent } from './entities/agent.entity';
 import { Repository } from 'typeorm';
@@ -23,6 +23,14 @@ export class AgentService {
 
   async findAll() {
     return await this.aRepository.find();
+  }
+
+  async updateAgentById(id: string, updateAgent: UpdateAgentDto) {
+    try {
+      return await this.aRepository.update(id, { ...updateAgent });
+    } catch (error) {
+
+    }
   }
 
   async findOne(id: string) {

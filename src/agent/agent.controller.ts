@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
-import { AgentDto } from './dto/agent.dto';
+import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
 // import { UpdateAgentDto } from './dto/update-agent.dto';
 
 @Controller('agent')
@@ -19,6 +19,12 @@ export class AgentController {
   create(@Body() createAgent: AgentDto) {
     console.log(createAgent);
     return this.agentService.createAgent(createAgent);
+  }
+
+  @Patch(':id')
+  updateById(@Param('id') id: string, @Body() updateAgent: UpdateAgentDto) {
+    console.log(updateAgent);
+    return this.agentService.updateAgentById(id,updateAgent);
   }
 
   @Get()

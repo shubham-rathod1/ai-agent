@@ -9,9 +9,27 @@ import {
   ValidateNested,
   IsOptional,
   IsNotEmptyObject,
+  IsArray,
+  ArrayNotEmpty,
 } from 'class-validator';
 import { AgentType } from 'src/helper/enums';
 import { Token } from 'src/helper/types';
+
+export class Social {
+  @MaxLength(20)
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50)
+  username: string;
+}
+
+export class ChatBind {
+  botToken: string;
+}
 
 export class AgentDto {
   @IsNotEmpty()
@@ -28,10 +46,35 @@ export class AgentDto {
   @Type(() => Token)
   token: Token;
 
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Social)
+  telegram?: ChatBind;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ChatBind)
+  discord?: ChatBind;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Social)
+  x?: Social;
+
+  @IsString()
+  @MaxLength(300)
+  @MinLength(100)
+  personality: string;
+
+  @ArrayNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  instructions: string[];
+
   @IsString()
   @MaxLength(500)
   @MinLength(150)
-  bio: string;
+  desc: string;
 
   @IsEnum(AgentType)
   typ: AgentType;
@@ -40,4 +83,50 @@ export class AgentDto {
   @IsOptional()
   @IsString()
   vibility: string;
+}
+
+export class UpdateAgentDto {
+  @IsOptional()
+  @IsNotEmpty()
+  @MaxLength(20)
+  @MinLength(3)
+  name: string;
+
+  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
+  pic: string;
+
+  // @IsOptional()
+  // @ValidateNested()
+  // @Type(() => Social)
+  // telegram?: ChatBind;
+
+  // @IsOptional()
+  // @ValidateNested()
+  // @Type(() => ChatBind)
+  // discord?: ChatBind;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Social)
+  x?: Social;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  @MinLength(100)
+  personality: string;
+
+  @ArrayNotEmpty()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  instructions: string[];
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  @MinLength(150)
+  desc: string;
 }
