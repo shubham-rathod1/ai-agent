@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
@@ -13,7 +15,9 @@ import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
 
 @Controller('agent')
 export class AgentController {
-  constructor(private readonly agentService: AgentService) {}
+  constructor(
+    private readonly agentService: AgentService,
+  ) {}
 
   @Post()
   create(@Body() createAgent: AgentDto) {
@@ -24,7 +28,7 @@ export class AgentController {
   @Patch(':id')
   updateById(@Param('id') id: string, @Body() updateAgent: UpdateAgentDto) {
     console.log(updateAgent);
-    return this.agentService.updateAgentById(id,updateAgent);
+    return this.agentService.updateAgentById(id, updateAgent);
   }
 
   @Get()

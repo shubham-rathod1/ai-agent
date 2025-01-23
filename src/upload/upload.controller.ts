@@ -1,7 +1,9 @@
 import {
   Controller,
+  Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UploadedFile,
   UploadedFiles,
@@ -9,11 +11,16 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import { KnowledgeBaseService } from './kb.service';
+// import { KnowledgeBaseService } from 'src/agent/kb.service';
 // import { MultiUploadDto, SingleUploadDto } from './dto/uplaod.dto';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(
+    private readonly uploadService: UploadService,
+    private readonly kbService: KnowledgeBaseService,
+  ) {}
 
   @Post('single')
   @UseInterceptors(FileInterceptor('file'))
@@ -33,5 +40,18 @@ export class UploadController {
     }
     const fileUrls = await this.uploadService.multiUpload(files);
     return fileUrls;
+  }
+  @Post('kb/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.kbService.processFile(id, file);
+  }
+
+  @Get('kb/:id')
+  async getKb(@Param('id') id: string) {
+    return await this.kbService.findKbById(id);
   }
 }
