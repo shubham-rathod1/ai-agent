@@ -4,10 +4,12 @@ import { UploadController } from './upload.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KnowledgeBase } from 'src/agent/entities/kb.entity';
 import { KnowledgeBaseService } from './kb.service';
+import { AgentService } from 'src/agent/agent.service';
+import { Agent } from 'src/agent/entities/agent.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([KnowledgeBase])],
+  imports: [TypeOrmModule.forFeature([KnowledgeBase, Agent])],
   controllers: [UploadController],
-  providers: [UploadService, KnowledgeBaseService],
+  providers: [UploadService, KnowledgeBaseService, AgentService],
 })
 export class UploadModule {}

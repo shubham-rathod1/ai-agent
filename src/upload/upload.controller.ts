@@ -41,6 +41,7 @@ export class UploadController {
     const fileUrls = await this.uploadService.multiUpload(files);
     return fileUrls;
   }
+
   @Post('kb/:id')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(

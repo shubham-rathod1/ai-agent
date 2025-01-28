@@ -6,4 +6,11 @@ enum AgentType {
   CREATIVE = 'creative',
 }
 
-export { AgentType };
+enum SignatureType {
+  Solana = 'Solana',
+  // Tron = 'Tron',
+  EVM = 'EVM',
+  // Cosmos = 'Cosmos',
+}
+
+export { AgentType, SignatureType };
