@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
@@ -48,7 +48,7 @@ export class AgentDto {
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => Social)
+  @Type(() => ChatBind)
   telegram?: ChatBind;
 
   @IsOptional()
@@ -129,4 +129,17 @@ export class UpdateAgentDto {
   @MaxLength(500)
   @MinLength(150)
   desc: string;
+}
+
+export class ResAgentDto {
+  @Expose() id: string;
+  @Expose() name: string;
+  @Expose() pic: string;
+  @Expose() token: Token;
+  @Expose() telegram?: ChatBind;
+  @Expose() discord?: ChatBind;
+  @Expose() x?: Social;
+  @Expose() desc: string;
+  @Expose() typ: AgentType;
+  @Expose() vibility: string;
 }

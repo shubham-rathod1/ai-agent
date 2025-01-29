@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Agent } from './entities/agent.entity';
 import { Repository } from 'typeorm';
+import { plainToInstance } from 'class-transformer';
 // import { UpdateAgentDto } from './dto/update-agent.dto';
 
 @Injectable()
@@ -11,9 +17,9 @@ export class AgentService {
     @InjectRepository(Agent) private readonly aRepository: Repository<Agent>,
   ) {}
 
-  async createAgent(createAgent: AgentDto) {
+  async createAgent(uid: string, createAgent: AgentDto) {
     try {
-      const agent = this.aRepository.create(createAgent);
+      const agent = this.aRepository.create({ uid, ...createAgent });
       return await this.aRepository.save(agent);
     } catch (e) {
       console.log(e);
@@ -25,18 +31,31 @@ export class AgentService {
     return await this.aRepository.find();
   }
 
-  async updateAgentById(id: string, updateAgent: UpdateAgentDto) {
+  async tokenData(network: string, tAddress: string) {
     try {
-      return await this.aRepository.update(id, { ...updateAgent });
+      const data = await fetch(
+        `https://api.geckoterminal.com/api/v2/networks/${network}/tokens/${tAddress}?include=top_pools`,
+      );
+      return await data.json();
     } catch (error) {
-
+      console.log(error);
+      throw error;
     }
+  }
+
+  async updateAgentById(uid: string, id: string, updateAgent: UpdateAgentDto) {
+    try {
+      const agent = this.aRepository.findOneBy({ uid });
+      if (!agent) {
+        return new UnauthorizedException('Not allowed to update this agent!');
+      }
+      return await this.aRepository.update(id, { ...updateAgent });
+    } catch (error) {}
   }
 
   async findOne(id: string) {
     try {
       const agent = await this.aRepository.findOne({ where: { id } });
-      console.log(agent);
       if (!agent) {
         throw new NotFoundException('Agent not found!');
       }
@@ -47,9 +66,15 @@ export class AgentService {
     }
   }
 
-  // update(id: number, updateAgentDto: UpdateAgentDto) {
-  //   return `This action updates a #${id} agent`;
-  // }
+  async findByUserId(uid: string): Promise<Agent[]> {
+    try {
+      const agents = await this.aRepository.find({ where: { uid } });
+      return agents;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 
   remove(id: number) {
     return `This action removes a #${id} agent`;

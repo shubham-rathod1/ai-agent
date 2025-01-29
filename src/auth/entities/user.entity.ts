@@ -1,18 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import * as crypto from 'crypto';
 
 @Entity()
-export class Auth {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-//   @Column()
-//   uid: number;
+export class User {
+  @PrimaryColumn({ unique: true })
+  id: string;
 
   @Column()
   address: string;
   // check type or address whether it is solana or evm
   @Column()
   typ: string;
+
+  @BeforeInsert()
+  generateId() {
+    this.id = crypto.randomBytes(6).toString('hex');
+  }
 }
 
 @Entity()
@@ -21,7 +30,7 @@ export class Session {
   id: number;
 
   @Column()
-  aid: number;
+  uid: string;
 
   @Column()
   token: string;

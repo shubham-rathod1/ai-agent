@@ -8,36 +8,70 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
-import { AgentDto, UpdateAgentDto } from './dto/agent.dto';
+import { AgentDto, ResAgentDto, UpdateAgentDto } from './dto/agent.dto';
+import { AuthGuard } from 'src/guards/auth.guards';
+import { CurrentUser } from 'src/decorators/currentUser.decorator';
+import { Session } from 'src/auth/entities/user.entity';
+import { plainToInstance } from 'class-transformer';
 // import { UpdateAgentDto } from './dto/update-agent.dto';
 
 @Controller('agent')
 export class AgentController {
-  constructor(
-    private readonly agentService: AgentService,
-  ) {}
+  constructor(private readonly agentService: AgentService) {}
 
   @Post()
-  create(@Body() createAgent: AgentDto) {
+  @UseGuards(AuthGuard)
+  create(@CurrentUser() session: Session, @Body() createAgent: AgentDto) {
     console.log(createAgent);
-    return this.agentService.createAgent(createAgent);
+    return this.agentService.createAgent(session.uid, createAgent);
   }
 
   @Patch(':id')
-  updateById(@Param('id') id: string, @Body() updateAgent: UpdateAgentDto) {
-    console.log(updateAgent);
-    return this.agentService.updateAgentById(id, updateAgent);
+  @UseGuards(AuthGuard)
+  updateById(
+    @CurrentUser() session: Session,
+    @Param('id') id: string,
+    @Body() updateAgent: UpdateAgentDto,
+  ) {
+    return this.agentService.updateAgentById(session.uid, id, updateAgent);
   }
 
   @Get()
-  findAll() {
-    return this.agentService.findAll();
+  async findAll() {
+    const agents = await this.agentService.findAll();
+    return plainToInstance(ResAgentDto, agents, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Get('tokenData')
+  async getTokenData(@Query() query: { network: string; tAddress: string }) {
+    const { network, tAddress } = query;
+    return this.agentService.tokenData(network, tAddress);
+  }
+
+  @Get('byUid')
+  @UseGuards(AuthGuard)
+  findByUid(@CurrentUser() session: Session) {
+    console.log('session', session);
+    return this.agentService.findByUserId(session.uid);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
+    const agent = await this.agentService.findOne(id);
+    return plainToInstance(ResAgentDto, agent, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Get('private/:id')
+  @UseGuards(AuthGuard)
+  findDetailedOne(@Param('id') id: string) {
     return this.agentService.findOne(id);
   }
 

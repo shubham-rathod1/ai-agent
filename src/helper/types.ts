@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -23,19 +24,21 @@ import {
 // }
 
 export class Token {
+  @Expose()
   @IsOptional()
   @IsString()
-//   @ValidateIf((o) => !o.tCAddress)
+  //   @ValidateIf((o) => !o.tCAddress)
   tkr?: string;
+  @Expose()
   @IsOptional()
   @IsString()
   @Matches(/^0x[a-fA-F0-9]{40}$/, {
     message: 'Invalid token address format. Must be a valid Ethereum address.',
   })
-//   @ValidateIf((o) => !o.tkr)
+  //   @ValidateIf((o) => !o.tkr)
   tCAddress?: string;
-//   @Validate(IsAtLeastOneField, {
-//     message: 'At least one of tkr or tCAddress must be provided.',
-//   })
-//   validateAtLeastOne: boolean;
+  //   @Validate(IsAtLeastOneField, {
+  //     message: 'At least one of tkr or tCAddress must be provided.',
+  //   })
+  //   validateAtLeastOne: boolean;
 }

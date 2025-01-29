@@ -1,13 +1,14 @@
 import { AgentType } from 'src/helper/enums';
 import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm';
 import * as crypto from 'crypto';
-import utils from 'ethers';
 import { Token } from 'src/helper/types';
 
 @Entity()
 export class Agent {
   @PrimaryColumn({ unique: true })
   id: string;
+  @Column()
+  uid: string;
   @Column({ unique: true })
   name: string;
   @Column('text', { array: true })
@@ -42,6 +43,6 @@ export class Agent {
 
   @BeforeInsert()
   generateId() {
-    this.id = crypto.randomBytes(8).toString('hex');
+    this.id = crypto.randomBytes(6).toString('hex');
   }
 }

@@ -1,10 +1,18 @@
-import { Body, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { AuthDto } from './dto/user.dto';
 import { AuthGuard } from 'src/guards/auth.guards';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
-import { Session } from './entities/auth.entity';
+import { Session } from './entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +24,12 @@ export class AuthController {
     const clientIp = this.getClientIp(request);
     console.log('from signup ip', clientIp);
     return this.authService.signUp(createUser, clientIp);
+  }
+
+  @Get('currentUser')
+  @UseGuards(AuthGuard)
+  getCurrentUser(@CurrentUser() session: Session): Session {
+    return session;
   }
 
   @Patch('disconnect')
