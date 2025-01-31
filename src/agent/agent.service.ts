@@ -45,8 +45,8 @@ export class AgentService {
 
   async updateAgentById(uid: string, id: string, updateAgent: UpdateAgentDto) {
     try {
-      const agent = this.aRepository.findOneBy({ uid });
-      if (!agent) {
+      const agent = await this.aRepository.findOneBy({ uid });
+      if (!agent || agent.id != id) {
         return new UnauthorizedException('Not allowed to update this agent!');
       }
       return await this.aRepository.update(id, { ...updateAgent });
