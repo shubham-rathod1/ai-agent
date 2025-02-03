@@ -13,4 +13,10 @@ enum SignatureType {
   // Cosmos = 'Cosmos',
 }
 
-export { AgentType, SignatureType };
+enum KbTypes {
+  TEXT = 'text',
+  URL = 'url',
+  FILE = 'file',
+}
+
+export { AgentType, SignatureType, KbTypes };

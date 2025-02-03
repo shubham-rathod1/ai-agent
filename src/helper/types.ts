@@ -1,10 +1,15 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  IsArray,
+  IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
   Validate,
   ValidateIf,
+  ValidateNested,
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -41,4 +46,12 @@ export class Token {
   //     message: 'At least one of tkr or tCAddress must be provided.',
   //   })
   //   validateAtLeastOne: boolean;
+}
+
+export class KbQuery {
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })   // Ensures all elements are integers
+  @Type(() => Number)      // Converts from string to number
+  ids: number[];
 }

@@ -1,10 +1,14 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  ParseArrayPipe,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -14,6 +18,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { KnowledgeBaseService } from './kb.service';
 import { AuthGuard } from 'src/guards/auth.guards';
+import { KbQuery } from 'src/helper/types';
 // import { KnowledgeBaseService } from 'src/agent/kb.service';
 // import { MultiUploadDto, SingleUploadDto } from './dto/uplaod.dto';
 
@@ -45,13 +50,25 @@ export class UploadController {
     return fileUrls;
   }
 
-  @Post('kb/:id')
+  @Post('kb/file/:id')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.kbService.processFile(id, file);
+  }
+
+  @Post('kb/txt/:id')
+  async txt(@Param('id') id: string, @Body() Body: { content: string }) {
+    return await this.kbService.uploadTxt(id, Body.content);
+  }
+
+  @Delete('kb/:id')
+  async deleteKb(@Param('id') id: string, @Body() body: KbQuery) {
+    const { ids } = body;
+    console.log('from controller', ids);
+    return await this.kbService.deleteKb(id, ids);
   }
 
   @Get('kb/:id')

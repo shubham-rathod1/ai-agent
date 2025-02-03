@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as pdfParse from 'pdf-parse';
 import * as mammoth from 'mammoth';
@@ -49,6 +49,35 @@ export class KnowledgeBaseService {
     } catch (error) {
       console.log(error);
       throw error;
+    }
+  }
+
+  async uploadTxt(id: string, content: string): Promise<KnowledgeBase> {
+    const agent = await this.aService.findOne(id);
+    console.log(id);
+    if (!agent) {
+      throw new NotFoundException('Agent Not Found!');
+    }
+    const knowledge = this.knowledgeBaseRepo.create({
+      aId: id,
+      filename: content.substring(0, 10),
+      content,
+    });
+    return await this.knowledgeBaseRepo.save(knowledge);
+  }
+
+  async deleteKb(id: string, kbID: number[]) {
+    console.log(id, kbID);
+    const agent = await this.aService.findOne(id);
+    if (!agent) {
+      throw new NotFoundException('Agent Not Found!');
+    }
+    const existingItems = await this.knowledgeBaseRepo.find({
+      where: { id: In(kbID) },
+    });
+    console.log(existingItems, 'existing items');
+    if (existingItems.length > 0) {
+      await this.knowledgeBaseRepo.remove(existingItems);
     }
   }
 
