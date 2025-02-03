@@ -49,7 +49,8 @@ export class AgentService {
       if (!agent || agent.id != id) {
         return new UnauthorizedException('Not allowed to update this agent!');
       }
-      return await this.aRepository.update(id, { ...updateAgent });
+      await this.aRepository.update(id, { ...updateAgent });
+      return `Agent - ${id} updated`;
     } catch (error) {}
   }
 
