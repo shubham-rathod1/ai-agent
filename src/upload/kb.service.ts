@@ -6,6 +6,7 @@ import * as pdfParse from 'pdf-parse';
 import * as mammoth from 'mammoth';
 import { KnowledgeBase } from '../agent/entities/kb.entity';
 import { AgentService } from 'src/agent/agent.service';
+import { KbTypes } from 'src/helper/enums';
 
 @Injectable()
 export class KnowledgeBaseService {
@@ -43,6 +44,7 @@ export class KnowledgeBaseService {
       const knowledge = this.knowledgeBaseRepo.create({
         aId: id,
         filename: file.originalname,
+        typ: KbTypes.FILE,
         content,
       });
       return await this.knowledgeBaseRepo.save(knowledge);
@@ -61,6 +63,7 @@ export class KnowledgeBaseService {
     const knowledge = this.knowledgeBaseRepo.create({
       aId: id,
       filename: content.substring(0, 10),
+      typ: KbTypes.TEXT,
       content,
     });
     return await this.knowledgeBaseRepo.save(knowledge);
