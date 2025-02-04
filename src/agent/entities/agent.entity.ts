@@ -1,5 +1,12 @@
 import { AgentType } from 'src/helper/enums';
-import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import * as crypto from 'crypto';
 import { Token } from 'src/helper/types';
 
@@ -40,6 +47,12 @@ export class Agent {
   typ: AgentType;
   @Column({ nullable: true })
   vibility: string;
+
+  @CreateDateColumn()
+  cta: Date;
+
+  @UpdateDateColumn()
+  uta: Date;
 
   @BeforeInsert()
   generateId() {
