@@ -6,13 +6,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AgentModule } from './agent/agent.module';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { ApiKeyModule } from './apis/apis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       // envFilePath: '.env.local',
-      envFilePath: '.env.prod'
+      envFilePath: '.env.prod',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -34,6 +37,9 @@ import { AuthModule } from './auth/auth.module';
     AgentModule,
     UploadModule,
     AuthModule,
+    UsersModule,
+    SubscriptionModule,
+    ApiKeyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

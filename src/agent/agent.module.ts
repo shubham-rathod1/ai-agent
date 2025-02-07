@@ -5,10 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Agent } from './entities/agent.entity';
 import { KnowledgeBaseService } from 'src/upload/kb.service';
 import { KnowledgeBase } from './entities/kb.entity';
-import { Session } from 'src/auth/entities/user.entity';
+import { Session } from 'src/auth/entities/auth.entity';
+import { User } from 'src/users/entities/user.entity';
+import { ApiKey } from 'src/apis/entity/api.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Agent, KnowledgeBase, Session])],
+  imports: [TypeOrmModule.forFeature([Agent, KnowledgeBase, Session, User,ApiKey])],
   controllers: [AgentController],
   providers: [AgentService, KnowledgeBaseService],
 })

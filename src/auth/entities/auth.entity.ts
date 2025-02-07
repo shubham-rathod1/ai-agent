@@ -1,23 +1,26 @@
 import {
   BeforeInsert,
   Column,
+  CreateDateColumn,
   Entity,
   PrimaryColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import * as crypto from 'crypto';
 
 @Entity()
-export class User {
+export class Auth {
   @PrimaryColumn({ unique: true })
   id: string;
-
   @Column()
   address: string;
-  // check type or address whether it is solana or evm
   @Column()
   typ: string;
-
+  @CreateDateColumn()
+  cta: Date;
+  @UpdateDateColumn()
+  uta: Date;
   @BeforeInsert()
   generateId() {
     this.id = crypto.randomBytes(6).toString('hex');
@@ -28,24 +31,16 @@ export class User {
 export class Session {
   @PrimaryGeneratedColumn()
   id: number;
-
   @Column()
   uid: string;
-
   @Column()
   token: string;
-  // status 1 or active and 0 for inactive
   @Column({ default: 1 })
   sts: number;
-
   @Column()
   ip: string;
-
-  // created at time
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   cta: Date;
-
-  // updated at time
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn()
   uta: Date;
 }

@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Session } from '../auth/entities/user.entity';
+import { Session } from '../auth/entities/auth.entity';
 import { Repository } from 'typeorm';
 @Injectable()
 export class AuthGuard implements CanActivate {

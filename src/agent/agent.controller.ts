@@ -10,13 +10,15 @@ import {
   UploadedFile,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import { AgentDto, ResAgentDto, UpdateAgentDto } from './dto/agent.dto';
 import { AuthGuard } from 'src/guards/auth.guards';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
-import { Session } from 'src/auth/entities/user.entity';
+import { Session } from 'src/auth/entities/auth.entity';
 import { plainToInstance } from 'class-transformer';
+import { ApiKeyAuthGuard } from 'src/guards/apikey.guard';
 // import { UpdateAgentDto } from './dto/update-agent.dto';
 
 @Controller('agent')
@@ -28,6 +30,11 @@ export class AgentController {
   create(@CurrentUser() session: Session, @Body() createAgent: AgentDto) {
     console.log(createAgent);
     return this.agentService.createAgent(session.uid, createAgent);
+  }
+  @Post('chat')
+  @UseGuards(ApiKeyAuthGuard) // Protect endpoint with API key auth
+  async chatWithAgent(@Req() req, @Body() body) {
+    return this.agentService.processChat(req.user, body.message);
   }
 
   @Patch(':id')

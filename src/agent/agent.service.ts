@@ -17,9 +17,9 @@ export class AgentService {
     @InjectRepository(Agent) private readonly aRepository: Repository<Agent>,
   ) {}
 
-  async createAgent(uid: string, createAgent: AgentDto) {
+  async createAgent(uId: string, createAgent: AgentDto) {
     try {
-      const agent = this.aRepository.create({ uid, ...createAgent });
+      const agent = this.aRepository.create({ uId, ...createAgent });
       return await this.aRepository.save(agent);
     } catch (e) {
       console.log(e);
@@ -43,9 +43,9 @@ export class AgentService {
     }
   }
 
-  async updateAgentById(uid: string, id: string, updateAgent: UpdateAgentDto) {
+  async updateAgentById(uId: string, id: string, updateAgent: UpdateAgentDto) {
     try {
-      const agent = await this.aRepository.findOneBy({ uid });
+      const agent = await this.aRepository.findOneBy({ uId });
       if (!agent || agent.id != id) {
         return new UnauthorizedException('Not allowed to update this agent!');
       }
@@ -67,14 +67,18 @@ export class AgentService {
     }
   }
 
-  async findByUserId(uid: string): Promise<Agent[]> {
+  async findByUserId(uId: string): Promise<Agent[]> {
     try {
-      const agents = await this.aRepository.find({ where: { uid } });
+      const agents = await this.aRepository.find({ where: { uId } });
       return agents;
     } catch (error) {
       console.log(error);
       throw error;
     }
+  }
+
+  async processChat(req, body) {
+    return req.user;
   }
 
   remove(id: number) {

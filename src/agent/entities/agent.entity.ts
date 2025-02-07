@@ -4,18 +4,21 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as crypto from 'crypto';
 import { Token } from 'src/helper/types';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Agent {
   @PrimaryColumn({ unique: true })
   id: string;
   @Column()
-  uid: string;
+  uId: string;
   @Column({ unique: true })
   name: string;
   @Column('text', { array: true })
@@ -30,12 +33,10 @@ export class Agent {
   telegram?: {
     botToken: string;
   };
-
   @Column({ type: 'jsonb', nullable: true })
   discord?: {
     botToken: string;
   };
-
   @Column({ type: 'jsonb', nullable: true })
   x?: {
     id: string;
@@ -47,13 +48,13 @@ export class Agent {
   typ: AgentType;
   @Column({ nullable: true })
   vibility: string;
-
   @CreateDateColumn()
   cta: Date;
-
   @UpdateDateColumn()
   uta: Date;
-
+  @ManyToOne(() => User, (user) => user.agent)
+  @JoinColumn({ name: 'uId' })
+  user: User;
   @BeforeInsert()
   generateId() {
     this.id = crypto.randomBytes(6).toString('hex');
