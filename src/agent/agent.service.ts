@@ -77,8 +77,8 @@ export class AgentService {
     }
   }
 
-  async processChat(req, body) {
-    return req.user;
+  async processChat(uId: string, message: string) {
+    return { user: uId, message };
   }
 
   remove(id: number) {

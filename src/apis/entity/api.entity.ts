@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  JoinColumn,
 } from 'typeorm';
 import * as crypto from 'crypto';
 import { User } from '../../users/entities/user.entity';
@@ -16,7 +17,7 @@ export class ApiKey {
   id: number;
 
   @Column()
-  name: string; // Key label for user reference
+  uId: string; // Key label for user reference
 
   @Column({ unique: true })
   key: string; // Hashed API key
@@ -25,6 +26,7 @@ export class ApiKey {
   active: boolean; // Can be disabled
 
   @ManyToOne(() => User, (user) => user.apikey, { onDelete: 'CASCADE' })
+  @JoinColumn({name: 'uId'})
   user: User;
 
   @CreateDateColumn()

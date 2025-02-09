@@ -14,11 +14,11 @@ export class ApiKeyService {
     private uRepo: Repository<User>,
   ) {}
 
-  async generateApiKey(userId: string, name: string) {
+  async generateApiKey(userId: string) {
     const user = await this.uRepo.findOne({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User not found');
 
-    const newKey = this.apiKeyRepo.create({ name, user });
+    const newKey = this.apiKeyRepo.create({ uId: user.id });
     newKey.key = crypto.randomBytes(32).toString('hex');
 
     return this.apiKeyRepo.save(newKey);

@@ -13,6 +13,8 @@ import * as crypto from 'crypto';
 export class Auth {
   @PrimaryColumn({ unique: true })
   id: string;
+  @Column({ unique: true })
+  uId: string;
   @Column()
   address: string;
   @Column()

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 // import { CreateUserDto } from './dto/user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -10,22 +10,15 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly uRepository: Repository<User>,
   ) {}
-  async create(body: { uName: string }) {
-    const queryRunner = this.uRepository.manager.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async create(uName: string, manager: EntityManager) {
     try {
-      const user = this.uRepository.create({
-        ...body,
+      const user = manager.getRepository(User).create({
+        uName,
       });
-      const saveduser = await this.uRepository.save(user);
-      await queryRunner.commitTransaction();
+      const saveduser = await manager.getRepository(User).save(user);
       return saveduser;
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       throw error;
-    } finally {
-      await queryRunner.release();
     }
   }
 

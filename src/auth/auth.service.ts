@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,7 +9,9 @@ import { Auth, Session } from './entities/auth.entity';
 import { Repository } from 'typeorm';
 import { extractAddr } from './auth.helper';
 import { AuthDto } from './dto/user.dto';
+import { UsersService } from 'src/users/users.service';
 const { randomBytes } = require('crypto');
+import { generateUsername } from 'unique-username-generator';
 
 @Injectable()
 export class AuthService {
@@ -16,17 +19,31 @@ export class AuthService {
     @InjectRepository(Auth) private readonly aRepository: Repository<Auth>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
+    private readonly uService: UsersService,
   ) {}
   async signUp(createUser: AuthDto, ip: string): Promise<Session> {
-    
-    const { msg, sig, pubKey, typ } = createUser;
-    const extAddr = await extractAddr(msg, sig, typ, pubKey);
-    let addr = await this.getAddress(extAddr);
-    if (!addr) {
-      addr = this.aRepository.create({ address: extAddr, typ });
-      await this.aRepository.save(addr);
+    const queryrunner = this.aRepository.manager.connection.createQueryRunner();
+    await queryrunner.connect();
+    await queryrunner.startTransaction();
+    try {
+      const { msg, sig, pubKey, typ } = createUser;
+      const extAddr = await extractAddr(msg, sig, typ, pubKey);
+      let addr = await this.getAddress(extAddr);
+      if (!addr) {
+        const uName = generateUsername('', 2, 15);
+        const user = await this.uService.create(uName, queryrunner.manager);
+        addr = this.aRepository.create({ address: extAddr, typ, uId: user.id });
+        await this.aRepository.save(addr);
+      }
+      const session = this.saveSession(addr.uId, ip);
+      await queryrunner.commitTransaction();
+      return session;
+    } catch (error) {
+      await queryrunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryrunner.release();
     }
-    return this.saveSession(addr.id, ip);
   }
 
   async getAddress(address: string): Promise<Auth> {

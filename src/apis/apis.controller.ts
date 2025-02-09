@@ -9,7 +9,9 @@ import {
   Body,
 } from '@nestjs/common';
 import { ApiKeyService } from './apis.service';
-import { AuthGuard } from 'src/guards/auth.guards';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { CurrentUser } from 'src/decorators/currentUser.decorator';
+import { Session } from 'src/auth/entities/auth.entity';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('api-keys')
@@ -18,8 +20,8 @@ export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @Post('generate')
-  async generate(@Req() req, @Body() body) {
-    return this.apiKeyService.generateApiKey(req.user.id, body.name);
+  async generate(@CurrentUser() session: Session) {
+    return this.apiKeyService.generateApiKey(session.uid);
   }
 
   @Get()

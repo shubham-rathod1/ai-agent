@@ -10,7 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { AuthDto } from './dto/user.dto';
-import { AuthGuard } from 'src/guards/auth.guards';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { Session } from './entities/auth.entity';
 

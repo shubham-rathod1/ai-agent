@@ -17,7 +17,7 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { KnowledgeBaseService } from './kb.service';
-import { AuthGuard } from 'src/guards/auth.guards';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { KbQuery } from 'src/helper/types';
 // import { KnowledgeBaseService } from 'src/agent/kb.service';
 // import { MultiUploadDto, SingleUploadDto } from './dto/uplaod.dto';

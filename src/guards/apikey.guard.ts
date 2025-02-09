@@ -25,7 +25,7 @@ export class ApiKeyAuthGuard implements CanActivate {
     });
     if (!key) throw new UnauthorizedException('Invalid API key');
 
-    request.user = key.user; // Attach user info to request
+    request.uId = key.uId; // Attach user info to request
     return true;
   }
 }
