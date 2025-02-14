@@ -31,10 +31,10 @@ export class Auth {
 
 @Entity()
 export class Session {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
-  @Column()
-  uid: string;
+  @Column({ type: 'uuid' })
+  uId: string;
   @Column()
   token: string;
   @Column({ default: 1 })

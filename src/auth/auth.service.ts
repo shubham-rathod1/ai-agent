@@ -50,16 +50,16 @@ export class AuthService {
     return await this.aRepository.findOne({ where: { address } });
   }
 
-  private async saveSession(uid: string, ip: string): Promise<Session> {
+  private async saveSession(uId: string, ip: string): Promise<Session> {
     const session = await this.sessionRepository.findOne({
-      where: { uid, ip, sts: 1 },
+      where: { uId, ip, sts: 1 },
     });
     if (session) {
       await this.logout(session.id);
     }
     const token = randomBytes(32).toString('hex');
     const login = await this.sessionRepository.save({
-      uid,
+      uId,
       token,
       ip,
     });

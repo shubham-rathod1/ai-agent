@@ -20,6 +20,7 @@ export class AgentService {
   async createAgent(uId: string, createAgent: AgentDto) {
     try {
       const agent = this.aRepository.create({ uId, ...createAgent });
+      console.log('agent', agent);
       return await this.aRepository.save(agent);
     } catch (e) {
       console.log(e);

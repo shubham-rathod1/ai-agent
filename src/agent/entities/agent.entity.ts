@@ -6,25 +6,28 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as crypto from 'crypto';
 import { Token } from 'src/helper/types';
 import { User } from 'src/users/entities/user.entity';
+import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 
 @Entity()
 export class Agent {
-  @PrimaryColumn({ unique: true })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column()
+  @Column({type:'uuid'})
   uId: string;
   @Column({ unique: true })
   name: string;
   @Column('text', { array: true })
   instructions: string[];
   @Column()
-  personality: string;
+  persona: string;
   @Column({ type: 'jsonb' })
   token: Token;
   @Column()
@@ -52,11 +55,13 @@ export class Agent {
   cta: Date;
   @UpdateDateColumn()
   uta: Date;
-  @ManyToOne(() => User, (user) => user.agent)
+  @ManyToOne(() => User, (user) => user.agents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'uId' })
   user: User;
-  @BeforeInsert()
-  generateId() {
-    this.id = crypto.randomBytes(6).toString('hex');
-  }
+  @OneToMany(() => ChatSession, (session) => session.agent, { cascade: true })
+  chatSessions: ChatSession[];
+  // @BeforeInsert()
+  // generateId() {
+  //   this.id = crypto.randomBytes(6).toString('hex');
+  // }
 }

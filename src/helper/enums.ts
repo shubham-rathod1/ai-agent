@@ -19,5 +19,10 @@ enum KbTypes {
   FILE = 'file',
 }
 
+enum SubscriptionTypes {
+  FREE = 'free',
+  PRO = 'pro',
+  PLUS = 'plus',
+}
 
-export { AgentType, SignatureType, KbTypes };
+export { AgentType, SignatureType, KbTypes, SubscriptionTypes };

@@ -25,9 +25,9 @@ export class ApiKey {
   @Column({ default: true })
   active: boolean; // Can be disabled
 
-  @ManyToOne(() => User, (user) => user.apikey, { onDelete: 'CASCADE' })
-  @JoinColumn({name: 'uId'})
-  user: User;
+  // @ManyToOne(() => User, (user) => user.apikey, { onDelete: 'CASCADE' })
+  // @JoinColumn({name: 'uId'})
+  // user: User;
 
   @CreateDateColumn()
   createdAt: Date;

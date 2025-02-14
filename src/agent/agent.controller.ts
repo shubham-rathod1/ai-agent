@@ -29,7 +29,7 @@ export class AgentController {
   @Post()
   create(@CurrentUser() session: Session, @Body() createAgent: AgentDto) {
     console.log(createAgent);
-    return this.agentService.createAgent(session.uid, createAgent);
+    return this.agentService.createAgent(session.uId, createAgent);
   }
   @Post('chat')
   @UseGuards(ApiKeyAuthGuard)
@@ -44,7 +44,7 @@ export class AgentController {
     @Param('id') id: string,
     @Body() updateAgent: UpdateAgentDto,
   ) {
-    return this.agentService.updateAgentById(session.uid, id, updateAgent);
+    return this.agentService.updateAgentById(session.uId, id, updateAgent);
   }
 
   @Get()
@@ -65,7 +65,7 @@ export class AgentController {
   // @UseGuards(AuthGuard)
   findByUid(@CurrentUser() session: Session) {
     console.log('session', session);
-    return this.agentService.findByUserId(session.uid);
+    return this.agentService.findByUserId(session.uId);
   }
 
   @Get(':id')

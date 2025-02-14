@@ -8,9 +8,10 @@ import { KnowledgeBase } from './entities/kb.entity';
 import { Session } from 'src/auth/entities/auth.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ApiKey } from 'src/apis/entity/api.entity';
+import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Agent, KnowledgeBase, Session, User,ApiKey])],
+  imports: [TypeOrmModule.forFeature([Agent, KnowledgeBase, Session, User,ApiKey,ChatSession])],
   controllers: [AgentController],
   providers: [AgentService, KnowledgeBaseService],
 })

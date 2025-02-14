@@ -7,8 +7,10 @@ import { AgentModule } from './agent/agent.module';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { SubscriptionModule } from './subscription/subscription.module';
-import { ApiKeyModule } from './apis/apis.module';
+// import { SubscriptionModule } from './subscription/subscription.module';
+// import { ApiKeyModule } from './apis/apis.module';
+import { ChatSessionModule } from './chat-session/chat-session.module';
+import { ChatMessageModule } from './chat-message/chat-message.module';
 
 @Module({
   imports: [
@@ -38,8 +40,10 @@ import { ApiKeyModule } from './apis/apis.module';
     UploadModule,
     AuthModule,
     UsersModule,
-    SubscriptionModule,
-    ApiKeyModule,
+    // SubscriptionModule,
+    // ApiKeyModule,
+    ChatSessionModule,
+    ChatMessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

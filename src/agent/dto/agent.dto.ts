@@ -64,7 +64,7 @@ export class AgentDto {
   @IsString()
   @MaxLength(300)
   @MinLength(100)
-  personality: string;
+  persona: string;
 
   @ArrayNotEmpty()
   @IsArray()

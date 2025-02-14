@@ -7,6 +7,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as crypto from 'crypto';
@@ -14,10 +15,12 @@ import { MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { Agent } from '../../agent/entities/agent.entity';
 import { ApiKey } from 'src/apis/entity/api.entity';
+import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 
 @Entity()
 export class User {
-  @PrimaryColumn({ unique: true })
+  // @PrimaryColumn({ unique: true })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({ unique: true })
   @MaxLength(15)
@@ -25,11 +28,11 @@ export class User {
   uName: string;
   @Column({ nullable: true, unique: true })
   email?: string;
-  @Column({ default: 'free' }) // ['free', 'pro', 'premium']
-  subscription: string;
-  @Column({ nullable: true })
-  api: string;
-  @Column({ type: 'jsonb', nullable: true }) // JSONB column, entire field can be null
+  // @Column({ default: 'free' }) // ['free', 'pro', 'premium']
+  // subscription: string;
+  // @Column({ nullable: true })
+  // api: string;
+  @Column({ type: 'jsonb', nullable: true })
   img?: {
     pro?: string;
     cvr?: string;
@@ -53,12 +56,20 @@ export class User {
   cta: Date;
   @UpdateDateColumn()
   uta: Date;
-  @OneToMany(() => Agent, (agent) => agent.user)
-  agent: Agent[];
-  @OneToMany(() => ApiKey, (apikey) => apikey.user, { cascade: true })
-  apikey: ApiKey[];
-  @BeforeInsert()
-  generateId() {
-    this.id = crypto.randomBytes(6).toString('hex');
-  }
+
+  // @OneToMany(() => Agent, (agent) => agent.user)
+  // agent: Agent[];
+
+  @OneToMany(() => Agent, (agent) => agent.user, { cascade: true })
+  agents: Agent[];
+
+  @OneToMany(() => ChatSession, (session) => session.user, { cascade: true })
+  chatSessions: ChatSession[];
+
+  // @OneToMany(() => ApiKey, (apikey) => apikey.user, { cascade: true })
+  // apikey: ApiKey[];
+  // @BeforeInsert()
+  // generateId() {
+  //   this.id = crypto.randomBytes(6).toString('hex');
+  // }
 }
