@@ -17,11 +17,14 @@ export enum ChatRole {
 
 @Entity()
 export class ChatMessage {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   cSessionId: string;
+
+  @Column({ nullable: true })
+  pId: number;
 
   @ManyToOne(() => ChatSession, (session) => session.messages, {
     onDelete: 'CASCADE',
@@ -33,12 +36,13 @@ export class ChatMessage {
   role: ChatRole;
 
   @Column({ type: 'text' })
-  content: string;
+  message: string;
 
   @ManyToOne(() => ChatMessage, (message) => message.responses, {
     nullable: true,
     onDelete: 'SET NULL',
   })
+  @JoinColumn({ name: 'pId' })
   parentMessage: ChatMessage;
 
   @OneToMany(() => ChatMessage, (message) => message.parentMessage)

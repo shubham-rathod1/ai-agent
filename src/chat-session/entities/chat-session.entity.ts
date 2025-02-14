@@ -41,5 +41,5 @@ export class ChatSession {
   messages: ChatMessage[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  cta: Date;
 }

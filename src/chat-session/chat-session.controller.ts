@@ -1,20 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { ChatSessionService } from './chat-session.service';
-import { CreateChatSessionDto } from './dto/create-chat-session.dto';
+import { CreateChatSessionDto } from './dto/chat-session.dto';
 import { UpdateChatSessionDto } from './dto/update-chat-session.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { CurrentUser } from 'src/decorators/currentUser.decorator';
+import { Session } from 'src/auth/entities/auth.entity';
 
 @Controller('chat-session')
+@UseGuards(AuthGuard)
 export class ChatSessionController {
   constructor(private readonly chatSessionService: ChatSessionService) {}
 
   @Post()
-  create(@Body() createChatSessionDto: CreateChatSessionDto) {
-    return this.chatSessionService.create(createChatSessionDto);
+  create(
+    @CurrentUser() session: Session,
+    @Body() createChatSession: CreateChatSessionDto,
+  ) {
+    return this.chatSessionService.create(session.uId, createChatSession);
   }
 
   @Get()
-  findAll() {
-    return this.chatSessionService.findAll();
+  findAll(@CurrentUser() session: Session, @Query('aId') aId: string) {
+    return this.chatSessionService.findAll(session.uId, aId);
   }
 
   @Get(':id')
@@ -23,7 +40,10 @@ export class ChatSessionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatSessionDto: UpdateChatSessionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateChatSessionDto: UpdateChatSessionDto,
+  ) {
     return this.chatSessionService.update(+id, updateChatSessionDto);
   }
 
