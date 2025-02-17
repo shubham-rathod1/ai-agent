@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateChatMessageDto } from './dto/chat-message.dto';
 import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { Repository } from 'typeorm';
+import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 
 @Injectable()
 export class ChatMessageService {
   constructor(
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
+    @InjectRepository(ChatSession)
+    private readonly cSessionRepos: Repository<ChatSession>,
   ) {}
   async create(uId: string, createChatMessage: any) {
     console.log(createChatMessage);
@@ -41,7 +44,7 @@ export class ChatMessageService {
         role: ChatRole.USER,
         message: cntnt.content,
       });
-      console.log(res)
+      console.log(res);
       await this.chatRepo.save(msg);
       const resp = this.chatRepo.create({
         cSessionId,
@@ -71,7 +74,14 @@ export class ChatMessageService {
     return `This action updates a #${id} chatMessage`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chatMessage`;
+  async deleteHistory(cSessionId: string) {
+    const cSession = await this.cSessionRepos.findOne({
+      where: { id: cSessionId },
+    });
+    if (!cSession) {
+      throw new NotFoundException('chat session not found!');
+    }
+    await this.chatRepo.delete({ cSessionId });
+    return 'Session History deleted!';
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateChatSessionDto } from './dto/chat-session.dto';
 import { UpdateChatSessionDto } from './dto/update-chat-session.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,9 @@ export class ChatSessionService {
     private readonly cSessionRepos: Repository<ChatSession>,
   ) {}
   async create(uId: string, createChatSession: CreateChatSessionDto) {
+    const { aId } = createChatSession;
+    const cSession = await this.cSessionRepos.findOne({ where: { aId, uId } });
+    if (cSession) throw new ConflictException('session already exists!');
     const chatSession = this.cSessionRepos.create({
       uId,
       ...createChatSession,

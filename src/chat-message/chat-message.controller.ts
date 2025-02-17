@@ -45,6 +45,6 @@ export class ChatMessageController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.chatMessageService.remove(+id);
+    return this.chatMessageService.deleteHistory(id);
   }
 }
