@@ -11,7 +11,7 @@ import { Queue, QueueEvents } from 'bullmq';
 @Injectable()
 export class ChatMessageService {
   constructor(
-    // @InjectQueue('1v1Chat') private readonly pQueue: Queue,
+    @InjectQueue('1v1Chat') private readonly pQueue: Queue,
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
     @InjectRepository(ChatSession)
@@ -23,13 +23,14 @@ export class ChatMessageService {
     // const queueEvents = new QueueEvents(this.pQueue);
 
     try {
-      // const job = await this.pQueue.add('pChat', {
-      //   cSessionId,
-      //   pId,
-      //   history,
-      // });
-      return await this.aiResponse(cSessionId,pId,history);
-      // return await job.waitUntilFinished(queueEvents);
+      const job = await this.pQueue.add('pChat', {
+        uId,
+        cSessionId,
+        pId,
+        history,
+      });
+      // return await this.aiResponse(cSessionId,pId,history);
+      return { jobId: job.id, message: 'Processing started' };
     } catch (error) {
       console.log(error);
     } finally {

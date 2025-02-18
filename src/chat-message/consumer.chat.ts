@@ -3,12 +3,14 @@ import { Job } from 'bullmq';
 import { Repository } from 'typeorm';
 import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChatGateway } from './chat.gateway';
 
 @Processor('1v1Chat')
 export class ChatProcessor extends WorkerHost {
   constructor(
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
+    private readonly chatGateway: ChatGateway,
   ) {
     super();
   }
@@ -16,7 +18,7 @@ export class ChatProcessor extends WorkerHost {
     switch (job.name) {
       case 'pChat': {
         console.log('it ran from consumer');
-        const { cSessionId, pId, history } = job.data;
+        const { cSessionId, pId, history,uId } = job.data;
         // business logic here;
         // const { cSessionId, pId, history } = createChatMessage;
         try {
@@ -41,6 +43,7 @@ export class ChatProcessor extends WorkerHost {
             },
           );
           const res = await response.json();
+
           const cntnt = history[history.length - 1];
           const msg = this.chatRepo.create({
             cSessionId,
@@ -50,14 +53,19 @@ export class ChatProcessor extends WorkerHost {
           });
           console.log(res);
           await this.chatRepo.save(msg);
-          const resp = this.chatRepo.create({
+          const aiResp = this.chatRepo.create({
             cSessionId,
             pId: msg.id,
             role: ChatRole.ASSISTANT,
             message: res.response,
           });
-          await this.chatRepo.save(resp);
-          return { ...res, chatId: resp.id };
+          await this.chatRepo.save(aiResp);
+
+          this.chatGateway.sendToUser(uId, 'chatResponse', {
+            chatId: aiResp.id,
+            response: res.response,
+          });
+          // return { ...res, chatId: resp.id };
         } catch (error) {
           console.log(error);
         }

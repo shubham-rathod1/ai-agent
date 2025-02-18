@@ -7,16 +7,17 @@ import { Session } from 'src/auth/entities/auth.entity';
 import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 import { BullModule } from '@nestjs/bullmq';
 import { ChatProcessor } from './consumer.chat';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ChatMessage, Session, ChatSession]),
-    // BullModule.registerQueue({
-    //   name: '1v1Chat',
-    // }),
+    BullModule.registerQueue({
+      name: '1v1Chat',
+    }),
   ],
-  controllers: [ChatMessageController],
-  // providers: [ChatMessageService,ChatProcessor],
-  providers: [ChatMessageService],
+  // controllers: [ChatMessageController],
+  providers: [ChatMessageService,ChatProcessor,ChatGateway],
+  // providers: [ChatMessageService],
 })
 export class ChatMessageModule {}
