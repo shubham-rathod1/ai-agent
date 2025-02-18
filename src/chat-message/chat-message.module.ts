@@ -11,11 +11,12 @@ import { ChatProcessor } from './consumer.chat';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ChatMessage, Session, ChatSession]),
-    BullModule.registerQueue({
-      name: '1v1Chat',
-    }),
+    // BullModule.registerQueue({
+    //   name: '1v1Chat',
+    // }),
   ],
   controllers: [ChatMessageController],
-  providers: [ChatMessageService,ChatProcessor],
+  // providers: [ChatMessageService,ChatProcessor],
+  providers: [ChatMessageService],
 })
 export class ChatMessageModule {}

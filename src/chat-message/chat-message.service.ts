@@ -11,7 +11,7 @@ import { Queue, QueueEvents } from 'bullmq';
 @Injectable()
 export class ChatMessageService {
   constructor(
-    @InjectQueue('1v1Chat') private readonly pQueue: Queue,
+    // @InjectQueue('1v1Chat') private readonly pQueue: Queue,
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
     @InjectRepository(ChatSession)

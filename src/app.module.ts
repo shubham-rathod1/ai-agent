@@ -20,16 +20,16 @@ import { BullModule } from '@nestjs/bullmq';
       // envFilePath: '.env.local',
       envFilePath: '.env.prod',
     }),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get('QUEUE_HOST'),
-          port: configService.get('QUEUE_PORT'),
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    // BullModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     connection: {
+    //       host: configService.get('QUEUE_HOST'),
+    //       port: configService.get('QUEUE_PORT'),
+    //     },
+    //   }),
+    //   inject: [ConfigService],
+    // }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
