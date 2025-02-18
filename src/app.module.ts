@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 // import { ApiKeyModule } from './apis/apis.module';
 import { ChatSessionModule } from './chat-session/chat-session.module';
 import { ChatMessageModule } from './chat-message/chat-message.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -18,6 +19,16 @@ import { ChatMessageModule } from './chat-message/chat-message.module';
       isGlobal: true,
       // envFilePath: '.env.local',
       envFilePath: '.env.prod',
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('QUEUE_HOST'),
+          port: configService.get('QUEUE_PORT'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
