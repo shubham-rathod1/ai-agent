@@ -17,8 +17,8 @@ import { BullModule } from '@nestjs/bullmq';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: '.env.local',
-      envFilePath: '.env.prod',
+      envFilePath: '.env.local',
+      // envFilePath: '.env.prod',
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],

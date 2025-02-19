@@ -16,7 +16,7 @@ import { ChatGateway } from './chat.gateway';
       name: '1v1Chat',
     }),
   ],
-  // controllers: [ChatMessageController],
+  controllers: [ChatMessageController],
   providers: [ChatMessageService,ChatProcessor,ChatGateway],
   // providers: [ChatMessageService],
 })
