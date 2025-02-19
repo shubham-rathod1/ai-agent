@@ -18,7 +18,7 @@ export class ChatProcessor extends WorkerHost {
     switch (job.name) {
       case 'pChat': {
         console.log('it ran from consumer');
-        const { cSessionId, pId, history,uId } = job.data;
+        const { cSessionId, pId, history, uId } = job.data;
         // business logic here;
         // const { cSessionId, pId, history } = createChatMessage;
         try {
@@ -37,12 +37,15 @@ export class ChatProcessor extends WorkerHost {
                     'A fierce but honorable samurai from a post-apocalyptic world...',
                 },
                 enable_action: true,
+                model_id: 'openai',
+                search_engine_id: 'brave',
                 knowledge_base_id: '1',
                 messages: history,
               }),
             },
           );
           const res = await response.json();
+          console.log('response from ai', res);
 
           const cntnt = history[history.length - 1];
           const msg = this.chatRepo.create({
@@ -51,7 +54,6 @@ export class ChatProcessor extends WorkerHost {
             role: ChatRole.USER,
             message: cntnt.content,
           });
-          console.log(res);
           await this.chatRepo.save(msg);
           const aiResp = this.chatRepo.create({
             cSessionId,
