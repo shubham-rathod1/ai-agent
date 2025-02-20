@@ -69,7 +69,7 @@ export class ChatProcessor extends WorkerHost {
           //   chatId: aiResp.id,
           //   response: res.response,
           // });
-          this.chatService.sendMessage(cSessionId, res.response);
+          this.chatService.sendMessage(cSessionId,aiResp.id, res.response);
 
           // return { ...res, chatId: resp.id };
         } catch (error) {

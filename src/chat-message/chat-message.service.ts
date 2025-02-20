@@ -77,10 +77,10 @@ export class ChatMessageService {
     });
   }
 
-  sendMessage(sessionId: string, message: string) {
+  sendMessage(sessionId: string,id:number, message: string) {
     const res = this.clients.get(sessionId);
     if (res) {
-      res.write(`data: ${JSON.stringify({ response: message })}\n\n`);
+      res.write(`data: ${JSON.stringify({ response: message,id })}\n\n`);
     }
   }
 
