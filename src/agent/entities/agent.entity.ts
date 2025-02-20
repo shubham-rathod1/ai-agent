@@ -26,6 +26,10 @@ export class Agent {
   name: string;
   @Column('text', { array: true })
   instructions: string[];
+  // @Column({default: "1"})
+  // knowledge_base_id: string;
+  // @Column()
+  // model_id: string;
   @Column()
   persona: string;
   @Column({ type: 'jsonb' })

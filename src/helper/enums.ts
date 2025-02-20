@@ -25,4 +25,9 @@ enum SubscriptionTypes {
   PLUS = 'plus',
 }
 
-export { AgentType, SignatureType, KbTypes, SubscriptionTypes };
+enum ModelId {
+  OPENAI = 'openai',
+  GROG = 'groq',
+}
+
+export { AgentType, SignatureType, KbTypes, SubscriptionTypes, ModelId };

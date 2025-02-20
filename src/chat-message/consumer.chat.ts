@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatGateway } from './chat.gateway';
+import { ChatMessageService } from './chat-message.service';
 
 @Processor('1v1Chat')
 export class ChatProcessor extends WorkerHost {
   constructor(
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
+    private readonly chatService: ChatMessageService,
     private readonly chatGateway: ChatGateway,
   ) {
     super();
@@ -63,10 +65,12 @@ export class ChatProcessor extends WorkerHost {
           });
           await this.chatRepo.save(aiResp);
 
-          this.chatGateway.sendToUser(uId, 'chatResponse', {
-            chatId: aiResp.id,
-            response: res.response,
-          });
+          // this.chatGateway.sendToUser(uId, 'chatResponse', {
+          //   chatId: aiResp.id,
+          //   response: res.response,
+          // });
+          this.chatService.sendMessage(cSessionId, res.response);
+
           // return { ...res, chatId: resp.id };
         } catch (error) {
           console.log(error);

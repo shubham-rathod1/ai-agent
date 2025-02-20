@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { ChatMessageService } from './chat-message.service';
 import { CreateChatMessageDto } from './dto/chat-message.dto';
@@ -14,6 +15,7 @@ import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { Session } from 'src/auth/entities/auth.entity';
+import {Response} from "express";
 
 @Controller('chat-message')
 @UseGuards(AuthGuard)
@@ -23,6 +25,15 @@ export class ChatMessageController {
   @Post()
   create(@CurrentUser() session: Session, @Body() createChatMessage: any) {
     return this.chatMessageService.create(session.uId, createChatMessage);
+  }
+
+  @Get('sse/:sessionId')
+  streamChat(@Param('sessionId') sessionId: string, @Res() res: Response) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    this.chatMessageService.subscribe(sessionId, res);
   }
 
   @Get(':cSessionId')

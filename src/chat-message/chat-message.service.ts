@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue, QueueEvents } from 'bullmq';
+import { Response } from 'express';
 
 @Injectable()
 export class ChatMessageService {
@@ -17,6 +18,7 @@ export class ChatMessageService {
     @InjectRepository(ChatSession)
     private readonly cSessionRepos: Repository<ChatSession>,
   ) {}
+  private clients = new Map<string, Response>();
   async create(uId: string, createChatMessage: any) {
     console.log(createChatMessage);
     const { cSessionId, pId, history } = createChatMessage;
@@ -30,7 +32,8 @@ export class ChatMessageService {
         history,
       });
       // return await this.aiResponse(cSessionId,pId,history);
-      return { jobId: job.id, message: 'Processing started' };
+      // return { jobId: job.id, message: 'Processing started' };
+      return { sessionId: cSessionId, message: 'Processing started' };
     } catch (error) {
       console.log(error);
     } finally {
@@ -62,6 +65,23 @@ export class ChatMessageService {
     }
     await this.chatRepo.delete({ cSessionId });
     return 'Session History deleted!';
+  }
+
+  subscribe(sessionId: string, res: Response) {
+    this.clients.set(sessionId, res);
+
+    // Remove connection on client disconnect
+    res.on('close', () => {
+      this.clients.delete(sessionId);
+      res.end();
+    });
+  }
+
+  sendMessage(sessionId: string, message: string) {
+    const res = this.clients.get(sessionId);
+    if (res) {
+      res.write(`data: ${JSON.stringify({ response: message })}\n\n`);
+    }
   }
 
   private async aiResponse(cSessionId: string, pId: number, history: any) {
