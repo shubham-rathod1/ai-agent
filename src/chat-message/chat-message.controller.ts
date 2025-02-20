@@ -15,14 +15,15 @@ import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { Session } from 'src/auth/entities/auth.entity';
-import {Response} from "express";
+import { Response } from 'express';
 
 @Controller('chat-message')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class ChatMessageController {
   constructor(private readonly chatMessageService: ChatMessageService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   create(@CurrentUser() session: Session, @Body() createChatMessage: any) {
     return this.chatMessageService.create(session.uId, createChatMessage);
   }
@@ -37,16 +38,19 @@ export class ChatMessageController {
   }
 
   @Get(':cSessionId')
+  @UseGuards(AuthGuard)
   findAll(@Param('cSessionId') cSessionId: string) {
     return this.chatMessageService.findAll(cSessionId);
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard)
   findOne(@Param('id') id: string) {
     return this.chatMessageService.findOne(+id);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateChatMessageDto: UpdateChatMessageDto,
@@ -55,6 +59,7 @@ export class ChatMessageController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@Param('id') id: string) {
     return this.chatMessageService.deleteHistory(id);
   }
