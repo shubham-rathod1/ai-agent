@@ -3,10 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as pdfParse from 'pdf-parse';
+import * as FormData from 'form-data';
 import * as mammoth from 'mammoth';
 import { KnowledgeBase } from '../agent/entities/kb.entity';
 import { AgentService } from 'src/agent/agent.service';
 import { KbTypes } from 'src/helper/enums';
+import axios from 'axios';
 
 @Injectable()
 export class KnowledgeBaseService {
@@ -15,6 +17,67 @@ export class KnowledgeBaseService {
     private knowledgeBaseRepo: Repository<KnowledgeBase>,
     private readonly aService: AgentService,
   ) {}
+
+  private baseUrl = 'https://generation.audiolibrary.ai/sona/kb';
+
+  async uploadPdf(id: string, file: Express.Multer.File) {
+    const res = await this.upload(id, file);
+    return res;
+  }
+
+  async uploadUrl(id: string, url: string) {
+    try {
+      const response = await axios.post(`${this.baseUrl}/api/documents/url/`, {
+        url: url,
+        knowledge_base_id: id,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+  }
+
+  async deleteKb( dId: string) {
+    const response = await axios.delete(`${this.baseUrl}/api/documents/`,{
+      params: {
+        document_id:dId
+      }
+    })
+    return response.data;
+  }
+
+  async findKbByKid(id: string) {
+    const response = await axios.get(`${this.baseUrl}/api/documents/`,{
+      params: {
+        knowledge_base_id:id
+      }
+    })
+    return response.data;
+  }
+
+  private async upload(kbId: string, file: Express.Multer.File) {
+    const formData = new FormData();
+    formData.append('file', file.buffer, {
+      filename: file.originalname,
+      contentType: file.mimetype,
+    });
+    formData.append('knowledge_base_id', kbId);
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/api/documents/pdf/`,
+        formData,
+        {
+          headers: formData.getHeaders(),
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+  }
 
   async processFile(
     id: string,
@@ -52,39 +115,5 @@ export class KnowledgeBaseService {
       console.log(error);
       throw error;
     }
-  }
-
-  async uploadTxt(id: string, content: string): Promise<KnowledgeBase> {
-    const agent = await this.aService.findOne(id);
-    console.log(id);
-    if (!agent) {
-      throw new NotFoundException('Agent Not Found!');
-    }
-    const knowledge = this.knowledgeBaseRepo.create({
-      aId: id,
-      filename: content.substring(0, 10),
-      typ: KbTypes.TEXT,
-      content,
-    });
-    return await this.knowledgeBaseRepo.save(knowledge);
-  }
-
-  async deleteKb(id: string, kbID: number[]) {
-    console.log(id, kbID);
-    const agent = await this.aService.findOne(id);
-    if (!agent) {
-      throw new NotFoundException('Agent Not Found!');
-    }
-    const existingItems = await this.knowledgeBaseRepo.find({
-      where: { id: In(kbID) },
-    });
-    console.log(existingItems, 'existing items');
-    if (existingItems.length > 0) {
-      await this.knowledgeBaseRepo.remove(existingItems);
-    }
-  }
-
-  async findKbById(id: string) {
-    return await this.knowledgeBaseRepo.find({ where: { aId: id } });
   }
 }

@@ -1,4 +1,4 @@
-import { AgentType } from 'src/helper/enums';
+import { AgentType, BrowserType, ModelId } from 'src/helper/enums';
 import {
   BeforeInsert,
   Column,
@@ -20,16 +20,14 @@ import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 export class Agent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({type:'uuid'})
+  @Column({ type: 'uuid' })
   uId: string;
   @Column({ unique: true })
   name: string;
-  @Column('text', { array: true })
-  instructions: string[];
-  // @Column({default: "1"})
-  // knowledge_base_id: string;
-  // @Column()
-  // model_id: string;
+  @Column()
+  model_id: ModelId;
+  @Column()
+  search_engine_id: BrowserType;
   @Column()
   persona: string;
   @Column({ type: 'jsonb' })

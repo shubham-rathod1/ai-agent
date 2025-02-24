@@ -56,23 +56,26 @@ export class UploadController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.kbService.processFile(id, file);
+    return await this.kbService.uploadPdf(id, file);
   }
 
-  @Post('kb/txt/:id')
-  async txt(@Param('id') id: string, @Body() Body: { content: string }) {
-    return await this.kbService.uploadTxt(id, Body.content);
+  @Post('kb/url/:id')
+  async txt(
+    @Param('id') id: string,
+    @Body() Body: { url: string },
+  ) {
+    return await this.kbService.uploadUrl(id, Body.url);
   }
 
-  @Delete('kb/:id')
-  async deleteKb(@Param('id') id: string, @Body() body: KbQuery) {
-    const { ids } = body;
-    console.log('from controller', ids);
-    return await this.kbService.deleteKb(id, ids);
+  @Delete('kb')
+  async deleteKb(@Query() query: { dId: string }) {
+    const { dId } = query;
+    console.log('from controller', dId);
+    return await this.kbService.deleteKb(dId);
   }
 
   @Get('kb/:id')
   async getKb(@Param('id') id: string) {
-    return await this.kbService.findKbById(id);
+    return await this.kbService.findKbByKid(id);
   }
 }
