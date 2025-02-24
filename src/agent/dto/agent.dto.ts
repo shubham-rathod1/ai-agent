@@ -12,7 +12,7 @@ import {
   IsArray,
   ArrayNotEmpty,
 } from 'class-validator';
-import { AgentType } from 'src/helper/enums';
+import { AgentType, BrowserType, ModelId } from 'src/helper/enums';
 import { Token } from 'src/helper/types';
 
 export class Social {
@@ -66,10 +66,16 @@ export class AgentDto {
   @MinLength(100)
   persona: string;
 
-  @ArrayNotEmpty()
-  @IsArray()
-  @IsString({ each: true })
-  instructions: string[];
+  // @ArrayNotEmpty()
+  // @IsArray()
+  // @IsString({ each: true })
+  // instructions: string[];
+  
+  @IsEnum(BrowserType)
+  search_engine_id: BrowserType;
+
+  @IsEnum(ModelId)
+  model_id: ModelId
 
   @IsString()
   @MaxLength(500)

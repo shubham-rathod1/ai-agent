@@ -30,4 +30,10 @@ enum ModelId {
   GROG = 'groq',
 }
 
-export { AgentType, SignatureType, KbTypes, SubscriptionTypes, ModelId };
+enum BrowserType {
+  DUCK = 'duck',
+  BRAVE = 'brave',
+  GOOGLE = 'google',
+}
+
+export { AgentType, SignatureType, KbTypes, SubscriptionTypes, ModelId,BrowserType };
