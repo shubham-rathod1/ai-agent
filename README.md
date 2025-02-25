@@ -1,30 +1,7 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Nest framework TypeScript repository.
 
 ## Project setup
 
@@ -58,42 +35,198 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Deployment
+# AI Agent API Documentation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+This document provides an overview of the available API endpoints for authentication, agent management, chat functionality, user updates, knowledge base (KB) uploads, and image uploads.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+## 🔒 Authorization  
+All requests **require an Authorization header** in the form of a **Bearer token**:  
+```
+Authorization: Bearer <your_token_here>
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Base URL  
+All endpoints replace `localhost:4000` with:  
+🔗 **[https://ai-agent-r139.onrender.com](https://ai-agent-r139.onrender.com)**  
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🛡️ Authentication  
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 🔹 Connect  
+**Endpoint:**  
+`POST /auth/connect`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/auth/connect](https://ai-agent-r139.onrender.com/auth/connect)  
+**Sample Request:**
+```json
+{
+    "msg": "Sign this message to prove you have access to this wallet in order to sign in to Community. This won't cost you any Gas. Date: 1731058227135",
+    "sig": "0xd2bd7283bb1a9a2510a7ba40d117ed2caf1348ec56d2923219e38e8ce3060e637c2c11b85b23e9c4ed8e1ba7046576e815b1fe613b5065e317609d3c457ddf321b",
+    "typ": "EVM"
+}
+```
+  
+### 🔹 Disconnect  
+**Endpoint:**  
+`POST /auth/disconnect`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/auth/disconnect](https://ai-agent-r139.onrender.com/auth/disconnect)  
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🤖 Agent Management  
 
-## Stay in touch
+### 🔹 Create Agent  
+**Endpoint:**  
+`POST /agent`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/agent](https://ai-agent-r139.onrender.com/agent)  
+**Sample Request:**
+```json
+{
+    "name": "numa-ai1",
+    "pic": "this should be url",
+    "search_engine_id": "brave",
+    "model_id": "openai",
+    "token": {
+        "tkr": "shr",
+        "tCAddress": "0xAadFC7f9807d2D1D0EB41e3A3836294F503Babc3"
+    },
+    "desc": "some bio with min 150 chr max 500charsome bio...",
+    "typ": "productive",
+    "persona": "I am a software developer working in the blockchain industry!"
+}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 🔹 Update Agent  
+**Endpoint:**  
+`PUT /agent/{agentId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/agent/{agentId}](https://ai-agent-r139.onrender.com/agent/{agentId})  
 
-## License
+### 🔹 Get All Agents  
+**Endpoint:**  
+`GET /agent`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/agent](https://ai-agent-r139.onrender.com/agent)  
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 🔹 Get Agent by ID  
+**Endpoint:**  
+`GET /agent/{agentId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/agent/{agentId}](https://ai-agent-r139.onrender.com/agent/{agentId})  
+
+### 🔹 Get Agents by User  
+**Endpoint:**  
+`GET /agent/byuid`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/agent/byuid](https://ai-agent-r139.onrender.com/agent/byuid)  
+
+---
+
+## 💬 Chat Management  
+
+### 🔹 Create Chat Session  
+**Endpoint:**  
+`POST /chat-session`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/chat-session](https://ai-agent-r139.onrender.com/chat-session)  
+**Sample Request:**
+```json
+{
+    "aId": "f5bb7074-4e15-4321-b225-143d7b43ed91"
+}
+```
+
+### 🔹 Get All Sessions (by Agent & User)  
+**Endpoint:**  
+`GET /chat-session?aId={agentId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/chat-session?aId=f5bb7074-4e15-4321-b225-143d7b43ed91](https://ai-agent-r139.onrender.com/chat-session?aId=f5bb7074-4e15-4321-b225-143d7b43ed91)  
+
+### 🔹 Get Chat History by Session  
+**Endpoint:**  
+`GET /chat-message/{sessionId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/chat-message/{sessionId}](https://ai-agent-r139.onrender.com/chat-message/{sessionId})  
+
+### 🔹 Delete Session History  
+**Endpoint:**  
+`DELETE /chat-message/{sessionId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/chat-message/{sessionId}](https://ai-agent-r139.onrender.com/chat-message/{sessionId})  
+
+### 🔹 Chat with Agent  
+**Endpoint:**  
+`POST /chat-message`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/chat-message](https://ai-agent-r139.onrender.com/chat-message)  
+**Sample Request:**
+```json
+{
+    "history": [
+        {
+            "role": "user",
+            "name": "shubham",
+            "content": "now add 5 to it."
+        },
+        {
+            "role": "assistant",
+            "content": "In the code of honor, numbers can mean many things..."
+        },
+        {
+            "role": "user",
+            "name": "shubham",
+            "content": "my number will be 2"
+        }
+    ],
+    "pId": 2,
+    "cSessionId": "f35fe4f2-92cd-4350-9a56-0286a384d2e8"
+}
+```
+
+---
+
+## 👤 User Management  
+
+### 🔹 Update User  
+**Endpoint:**  
+`PUT /users/{userId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/users/{userId}](https://ai-agent-r139.onrender.com/users/{userId})  
+
+---
+
+## 📚 Knowledge Base (KB)  
+
+### 🔹 Upload KB via PDF  
+**Endpoint:**  
+`POST /upload/kb/file/{agentId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/upload/kb/file/{agentId}](https://ai-agent-r139.onrender.com/upload/kb/file/{agentId})  
+
+### 🔹 Upload KB via URL  
+**Endpoint:**  
+`POST /upload/kb/url/{agentId}`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/upload/kb/url/{agentId}](https://ai-agent-r139.onrender.com/upload/kb/url/{agentId})  
+
+---
+
+## 🖼️ Image Upload  
+
+### 🔹 Upload Image  
+**Endpoint:**  
+`POST /upload/single`  
+**URL:**  
+[https://ai-agent-r139.onrender.com/upload/single](https://ai-agent-r139.onrender.com/upload/single)  
+
+---
+
+## 📌 Notes  
+- **All requests require an Authorization header (Bearer Token).**  
+- Replace `{agentId}`, `{sessionId}`, or `{userId}` in URLs with actual IDs.  
+- All request bodies should be sent as **JSON** unless specified otherwise.  
+
+🚀 **Enjoy building with AI Agent API!**  
