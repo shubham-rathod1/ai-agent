@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import * as fs from 'fs';
@@ -38,31 +38,38 @@ export class KnowledgeBaseService {
     }
   }
 
-  async deleteKb( dId: string) {
-    const response = await axios.delete(`${this.baseUrl}/api/documents/`,{
+  async deleteKb(dId: string) {
+    const response = await axios.delete(`${this.baseUrl}/api/documents/`, {
       params: {
-        document_id:dId
-      }
-    })
+        document_id: dId,
+      },
+    });
     return response.data;
   }
 
   async findKbByKid(id: string) {
-    const response = await axios.get(`${this.baseUrl}/api/documents/`,{
+    const response = await axios.get(`${this.baseUrl}/api/documents/`, {
       params: {
-        knowledge_base_id:id
-      }
-    })
+        knowledge_base_id: id,
+      },
+    });
     return response.data;
   }
 
   private async upload(kbId: string, file: Express.Multer.File) {
     const formData = new FormData();
+    if(!file) throw new BadRequestException("unsupported or bad file sent!")
     formData.append('file', file.buffer, {
       filename: file.originalname,
       contentType: file.mimetype,
     });
     formData.append('knowledge_base_id', kbId);
+
+    file.buffer,
+      {
+        filename: file.originalname,
+        contentType: file.mimetype,
+      };
 
     try {
       const response = await axios.post(
