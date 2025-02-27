@@ -27,18 +27,20 @@ export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   create(@CurrentUser() session: Session, @Body() createAgent: AgentDto) {
     console.log(createAgent);
     return this.agentService.createAgent(session.uId, createAgent);
   }
   @Post('chat')
+  @UseGuards(AuthGuard)
   @UseGuards(ApiKeyAuthGuard)
   async chatWithAgent(@Req() req, @Body() body) {
     return this.agentService.processChat(req.uId, body.message);
   }
 
   @Patch(':id')
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   updateById(
     @CurrentUser() session: Session,
     @Param('id') id: string,
@@ -56,6 +58,7 @@ export class AgentController {
   }
 
   @Get('tokenData')
+  @UseGuards(AuthGuard)
   async getTokenData(@Query() query: { network: string; tAddress: string }) {
     const { network, tAddress } = query;
     return this.agentService.tokenData(network, tAddress);
@@ -77,12 +80,13 @@ export class AgentController {
   }
 
   @Get('private/:id')
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   findDetailedOne(@Param('id') id: string) {
     return this.agentService.findOne(id);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@Param('id') id: string) {
     return this.agentService.remove(+id);
   }
