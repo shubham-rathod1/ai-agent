@@ -22,7 +22,7 @@ import { ApiKeyAuthGuard } from 'src/guards/apikey.guard';
 // import { UpdateAgentDto } from './dto/update-agent.dto';
 
 @Controller('agent')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
