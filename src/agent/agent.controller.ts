@@ -65,7 +65,7 @@ export class AgentController {
   }
 
   @Get('byUid')
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   findByUid(@CurrentUser() session: Session) {
     console.log('session', session);
     return this.agentService.findByUserId(session.uId);
