@@ -26,14 +26,21 @@ enum SubscriptionTypes {
 }
 
 enum ModelId {
-  OPENAI = 'openai',
-  GROG = 'groq',
+  OPENAI = 'llama-3.3-70b-versatile',
+  GROG = 'gpt-4o-mini',
 }
 
 enum BrowserType {
-  DUCK = 'duck',
+  DUCK = 'duckduckgo',
   BRAVE = 'brave',
   GOOGLE = 'google',
 }
 
-export { AgentType, SignatureType, KbTypes, SubscriptionTypes, ModelId,BrowserType };
+export {
+  AgentType,
+  SignatureType,
+  KbTypes,
+  SubscriptionTypes,
+  ModelId,
+  BrowserType,
+};

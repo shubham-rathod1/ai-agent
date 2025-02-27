@@ -70,12 +70,12 @@ export class AgentDto {
   // @IsArray()
   // @IsString({ each: true })
   // instructions: string[];
-  
+
   @IsEnum(BrowserType)
   search_engine_id: BrowserType;
 
   @IsEnum(ModelId)
-  model_id: ModelId
+  model_id: ModelId;
 
   @IsString()
   @MaxLength(500)
@@ -122,13 +122,19 @@ export class UpdateAgentDto {
   @IsOptional()
   @MaxLength(300)
   @MinLength(100)
-  personality: string;
+  persona: string;
 
-  @ArrayNotEmpty()
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  instructions: string[];
+  @IsEnum(BrowserType)
+  search_engine_id: BrowserType;
+
+  @IsEnum(ModelId)
+  model_id: ModelId;
+
+  // @ArrayNotEmpty()
+  // @IsOptional()
+  // @IsArray()
+  // @IsString({ each: true })
+  // instructions: string[];
 
   @IsString()
   @IsOptional()
