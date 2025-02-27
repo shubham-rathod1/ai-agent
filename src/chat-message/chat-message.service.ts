@@ -21,7 +21,17 @@ export class ChatMessageService {
   private clients = new Map<string, Response>();
   async create(uId: string, createChatMessage: any) {
     console.log(createChatMessage);
-    const { cSessionId, pId, history } = createChatMessage;
+    const {
+      cSessionId,
+      pId,
+      history,
+      action,
+      model_id,
+      kbId,
+      persona,
+      name,
+      search_engine_id,
+    } = createChatMessage;
     // const queueEvents = new QueueEvents(this.pQueue);
 
     try {
@@ -29,7 +39,13 @@ export class ChatMessageService {
         uId,
         cSessionId,
         pId,
+        kbId,
+        name,
+        persona,
         history,
+        action,
+        model_id,
+        search_engine_id,
       });
       // return await this.aiResponse(cSessionId,pId,history);
       // return { jobId: job.id, message: 'Processing started' };
@@ -77,14 +93,22 @@ export class ChatMessageService {
     });
   }
 
-  sendMessage(sessionId: string,id:number, message: string) {
+  sendMessage(sessionId: string, id: number, message: string) {
     const res = this.clients.get(sessionId);
     if (res) {
-      res.write(`data: ${JSON.stringify({ response: message,id })}\n\n`);
+      res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
     }
   }
 
-  private async aiResponse(cSessionId: string, pId: number, history: any) {
+  private async aiResponse(
+    cSessionId: string,
+    pId: number,
+    history: any,
+    aId: string,
+    action: boolean,
+    model_id: string,
+    search_engine_id: string,
+  ) {
     try {
       const response = await fetch(
         'https://generation.audiolibrary.ai/sona/kb/api/chat/',
@@ -100,8 +124,10 @@ export class ChatMessageService {
               persona:
                 'A fierce but honorable samurai from a post-apocalyptic world...',
             },
-            enable_action: true,
-            knowledge_base_id: '1',
+            enable_action: false,
+            knowledge_base_id: null,
+            model_id: 'llama-3.3-70b-versatile',
+            search_engine_id: null,
             messages: history,
           }),
         },

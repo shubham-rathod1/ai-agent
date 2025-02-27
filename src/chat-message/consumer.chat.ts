@@ -20,9 +20,33 @@ export class ChatProcessor extends WorkerHost {
     switch (job.name) {
       case 'pChat': {
         console.log('it ran from consumer');
-        const { cSessionId, pId, history, uId } = job.data;
+        const {
+          cSessionId,
+          pId,
+          history,
+          kbId,
+          persona,
+          name,
+          action,
+          model_id,
+          search_engine_id,
+        } = job.data;
         // business logic here;
-        // const { cSessionId, pId, history } = createChatMessage;
+        console.log(
+          'from worker',
+          JSON.stringify({
+            character: {
+              name: "Kaoru 'Stormblade' Takahashi",
+              persona:
+                'A fierce but honorable samurai from a post-apocalyptic world...',
+            },
+            enable_action: action,
+            model_id,
+            search_engine_id,
+            knowledge_base_id: null,
+            messages: history,
+          }),
+        );
         try {
           const response = await fetch(
             'https://generation.audiolibrary.ai/sona/kb/api/chat/',
@@ -34,14 +58,13 @@ export class ChatProcessor extends WorkerHost {
 
               body: JSON.stringify({
                 character: {
-                  name: "Kaoru 'Stormblade' Takahashi",
-                  persona:
-                    'A fierce but honorable samurai from a post-apocalyptic world...',
+                  name,
+                  persona,
                 },
-                enable_action: true,
-                model_id: 'openai',
-                search_engine_id: 'brave',
-                knowledge_base_id: '1',
+                enable_action: action,
+                model_id,
+                search_engine_id,
+                knowledge_base_id: kbId,
                 messages: history,
               }),
             },
@@ -69,7 +92,7 @@ export class ChatProcessor extends WorkerHost {
           //   chatId: aiResp.id,
           //   response: res.response,
           // });
-          this.chatService.sendMessage(cSessionId,aiResp.id, res.response);
+          this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
 
           // return { ...res, chatId: resp.id };
         } catch (error) {
