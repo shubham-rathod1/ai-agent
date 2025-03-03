@@ -94,9 +94,11 @@ export class ChatMessageService {
   }
 
   sendMessage(sessionId: string, id: number, message: string) {
+    console.log("sending msg")
     const res = this.clients.get(sessionId);
     if (res) {
       res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
+      console.log("msg sent ", message)
     }
   }
 
