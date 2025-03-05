@@ -71,7 +71,7 @@ export class GrpMessageService {
       );
       const res = await response.json();
       console.log('res from airesponse', res);
-      return res.response;
+      return res;
     } catch (error) {
       console.log(error);
       throw error;
