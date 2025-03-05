@@ -33,6 +33,7 @@ export class GrpMessageService {
       amnt,
     });
     const aiResp = await this.aiResponse(content);
+    console.log('aiResp', aiResp);
     this.sendResponse(instanceId, aiResp);
     return await this.messageRepository.save(message);
   }
@@ -85,6 +86,7 @@ export class GrpMessageService {
   }
 
   sendResponse(instanceId: number, message: string) {
+    console.log('before sending', instanceId, message);
     const clients = this.clients.get(instanceId);
     if (clients) {
       clients.forEach((res) => {
