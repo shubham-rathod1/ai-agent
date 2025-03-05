@@ -37,7 +37,7 @@ export class GrpMessageService {
     return await this.messageRepository.save(message);
   }
 
-  async aiResponse(messages: any) {
+  async aiResponse(content: any) {
     try {
       const response = await fetch(
         'https://generation.audiolibrary.ai/sona/kb/api/chat/',
@@ -57,7 +57,7 @@ export class GrpMessageService {
             model_id: 'gpt-4o-mini',
             search_engine_id: null,
             knowledge_base_id: null,
-            messages,
+            messages: { role: 'user', name: 'manges', content },
           }),
         },
       );
