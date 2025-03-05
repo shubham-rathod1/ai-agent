@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Res,
+  Query,
 } from '@nestjs/common';
 import { GrpMessageService } from './grp-message.service';
 import { instanceDto } from './dto/grp-message.dto';
@@ -41,9 +42,14 @@ export class GrpMessageController {
   }
 
   @Post('grp-instance')
-  async createInstance( @Body() instance: any) {
-    console.log("from instace ",instance);
+  async createInstance(@Body() instance: any) {
     return this.grpMessageService.createInstance(instance);
+  }
+
+  @Get('grp-instance')
+  async getInstanceByAid(@Query('aId') aId: string) {
+    console.log("aid", aId)
+    return await this.grpMessageService.findOneInstance(aId);
   }
 
   @Get('sse/:instanceId')
@@ -60,10 +66,10 @@ export class GrpMessageController {
     return this.grpMessageService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.grpMessageService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.grpMessageService.findOne(id);
+  // }
 
   // @Patch(':id')
   // update(

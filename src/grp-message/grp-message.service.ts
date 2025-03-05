@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { instanceDto } from './dto/grp-message.dto';
 // import { UpdateGrpMessageDto } from './dto/update-grp-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -64,6 +64,8 @@ export class GrpMessageService {
   }
 
   async createInstance(instance: any): Promise<GrpInstance> {
+    const extInst = await this.findOneInstance(instance.aId);
+    if (extInst) throw new ConflictException('instance already exists!');
     const inst = this.instanceRepository.create(instance) as any;
     return this.instanceRepository.save(inst);
   }
@@ -72,8 +74,12 @@ export class GrpMessageService {
     return `This action returns all grpMessage`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} grpMessage`;
+  async findOneInstance(aId: string) {
+    console.log("from service", aId);
+    const instanc = await this.instanceRepository.findOneBy({ aId });
+    console.log("instance",instanc)
+    return instanc;
+    // return `This action returns a #${id} grpMessage`;
   }
 
   // update(id: number, updateGrpMessageDto: UpdateGrpMessageDto) {
