@@ -32,11 +32,41 @@ export class GrpMessageService {
       hash,
       amnt,
     });
-    this.sendResponse(
-      instanceId,
-      `this is the message from ${instanceId} at timestamp ${Date.now}`,
-    );
+    const aiResp = await this.aiResponse(content);
+    this.sendResponse(instanceId, aiResp);
     return await this.messageRepository.save(message);
+  }
+
+  async aiResponse(messages: any) {
+    try {
+      const response = await fetch(
+        'https://generation.audiolibrary.ai/sona/kb/api/chat/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            character: {
+              name: 'shinobi',
+              persona:
+                'you are an shinobi, master in marital arts and assissanication skills',
+            },
+            enable_action: true,
+            model_id: 'gpt-4o-mini',
+            search_engine_id: null,
+            knowledge_base_id: null,
+            messages,
+          }),
+        },
+      );
+      const res = await response.json();
+      return res.response;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   subscribe(instanceId: number, res: Response) {
@@ -75,9 +105,9 @@ export class GrpMessageService {
   }
 
   async findOneInstance(aId: string) {
-    console.log("from service", aId);
+    console.log('from service', aId);
     const instanc = await this.instanceRepository.findOneBy({ aId });
-    console.log("instance",instanc)
+    console.log('instance', instanc);
     return instanc;
     // return `This action returns a #${id} grpMessage`;
   }
