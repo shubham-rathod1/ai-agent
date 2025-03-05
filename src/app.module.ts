@@ -12,13 +12,14 @@ import { UsersModule } from './users/users.module';
 import { ChatSessionModule } from './chat-session/chat-session.module';
 import { ChatMessageModule } from './chat-message/chat-message.module';
 import { BullModule } from '@nestjs/bullmq';
+import { GrpMessageModule } from './grp-message/grp-message.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: '.env.local',
-      envFilePath: '.env.prod',
+      envFilePath: '.env.local',
+      // envFilePath: '.env.prod',
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
@@ -57,6 +58,7 @@ import { BullModule } from '@nestjs/bullmq';
     // ApiKeyModule,
     ChatSessionModule,
     ChatMessageModule,
+    GrpMessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
