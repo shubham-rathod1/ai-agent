@@ -69,6 +69,7 @@ export class ChatProcessor extends WorkerHost {
               }),
             },
           );
+          console.log('before json ', response);
           const res = await response.json();
           console.log('response from ai', res);
 
@@ -92,7 +93,8 @@ export class ChatProcessor extends WorkerHost {
           //   chatId: aiResp.id,
           //   response: res.response,
           // });
-          this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
+          console.log('cSessionId', cSessionId);
+          cSessionId && this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
 
           // return { ...res, chatId: resp.id };
         } catch (error) {

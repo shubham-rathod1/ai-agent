@@ -11,9 +11,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forFeature([GrpMessage, Session, GrpInstance, MutedUser]),
-    BullModule.registerQueue({
-      name: 'grpChat',
-    }),
+    // BullModule.registerQueue({
+    //   name: 'grpChat',
+    // }),
   ],
   controllers: [GrpMessageController],
   providers: [GrpMessageService],

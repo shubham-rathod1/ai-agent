@@ -85,6 +85,7 @@ export class ChatMessageService {
 
   subscribe(sessionId: string, res: Response) {
     this.clients.set(sessionId, res);
+    console.log("clients map",this.clients)
 
     // Remove connection on client disconnect
     res.on('close', () => {
@@ -94,11 +95,14 @@ export class ChatMessageService {
   }
 
   sendMessage(sessionId: string, id: number, message: string) {
-    console.log("sending msg")
     const res = this.clients.get(sessionId);
+    console.log('this is from sendmessage', sessionId, res);
     if (res) {
+      console.log('sending msg');
       res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
-      console.log("msg sent ", message)
+      console.log('msg sent ', message);
+    } else {
+      throw new NotFoundException("session does not exist")
     }
   }
 

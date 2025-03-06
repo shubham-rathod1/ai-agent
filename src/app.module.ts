@@ -18,8 +18,8 @@ import { GrpMessageModule } from './grp-message/grp-message.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.local',
-      // envFilePath: '.env.prod',
+      // envFilePath: '.env.local',
+      envFilePath: '.env.prod',
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
@@ -58,7 +58,7 @@ import { GrpMessageModule } from './grp-message/grp-message.module';
     // ApiKeyModule,
     ChatSessionModule,
     ChatMessageModule,
-    GrpMessageModule,
+    // GrpMessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
