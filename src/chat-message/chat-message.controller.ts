@@ -29,12 +29,17 @@ export class ChatMessageController {
   }
 
   @Get('sse/:sessionId')
-  streamChat(@Param('sessionId') sessionId: string, @Res() res: Response) {
+  @UseGuards(AuthGuard)
+  streamChat(
+    @Param('sessionId') sessionId: string,
+    @CurrentUser() session: Session,
+    @Res() res: Response,
+  ) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    this.chatMessageService.subscribe(sessionId, res);
+    this.chatMessageService.subscribe(sessionId, res, session.uId);
   }
 
   @Get(':cSessionId')

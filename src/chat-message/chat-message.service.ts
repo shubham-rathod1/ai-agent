@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateChatMessageDto } from './dto/chat-message.dto';
 import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -83,9 +87,17 @@ export class ChatMessageService {
     return 'Session History deleted!';
   }
 
-  subscribe(sessionId: string, res: Response) {
+  async subscribe(sessionId: string, res: Response, uId: string) {
+    const sess = await this.cSessionRepos.findOne({ where: { id: sessionId } });
+    if (!sess) {
+      throw new NotFoundException('session not found'!);
+    }
+    if (sess.uId !== uId)
+      throw new UnauthorizedException(
+        'You are not authorized to join this session!',
+      );
     this.clients.set(sessionId, res);
-    console.log("clients map",this.clients)
+    console.log('clients map', this.clients);
 
     // Remove connection on client disconnect
     res.on('close', () => {
@@ -102,7 +114,7 @@ export class ChatMessageService {
       res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
       console.log('msg sent ', message);
     } else {
-      throw new NotFoundException("session does not exist")
+      throw new NotFoundException('session does not exist');
     }
   }
 

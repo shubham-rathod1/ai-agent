@@ -68,32 +68,8 @@ export class ChatProcessor extends WorkerHost {
               },
             },
           );
-
-          // const response = await fetch(
-          //   'https://generation.audiolibrary.ai/sona/kb/api/chat/',
-          //   {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //     },
-
-          //     body: JSON.stringify({
-          //       character: {
-          //         name,
-          //         persona,
-          //       },
-          //       enable_action: action,
-          //       model_id,
-          //       search_engine_id,
-          //       knowledge_base_id: kbId,
-          //       messages: history,
-          //     }),
-          //   },
-          // );
           console.log('from axios ', response.data);
           const res = response.data;
-          // const res = await response.json();
-          // console.log('response from ai', res);
 
           const cntnt = history[history.length - 1];
           const msg = this.chatRepo.create({
