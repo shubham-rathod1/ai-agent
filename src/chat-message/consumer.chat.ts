@@ -5,6 +5,7 @@ import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatGateway } from './chat.gateway';
 import { ChatMessageService } from './chat-message.service';
+import axios from 'axios';
 
 @Processor('1v1Chat')
 export class ChatProcessor extends WorkerHost {
@@ -48,30 +49,51 @@ export class ChatProcessor extends WorkerHost {
           }),
         );
         try {
-          const response = await fetch(
+          const response = await axios.post(
             'https://generation.audiolibrary.ai/sona/kb/api/chat/',
             {
-              method: 'POST',
+              character: {
+                name,
+                persona,
+              },
+              enable_action: action,
+              model_id,
+              search_engine_id,
+              knowledge_base_id: kbId,
+              messages: history,
+            },
+            {
               headers: {
                 'Content-Type': 'application/json',
               },
-
-              body: JSON.stringify({
-                character: {
-                  name,
-                  persona,
-                },
-                enable_action: action,
-                model_id,
-                search_engine_id,
-                knowledge_base_id: kbId,
-                messages: history,
-              }),
             },
           );
-          console.log('before json ', response);
-          const res = await response.json();
-          console.log('response from ai', res);
+
+          // const response = await fetch(
+          //   'https://generation.audiolibrary.ai/sona/kb/api/chat/',
+          //   {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //     },
+
+          //     body: JSON.stringify({
+          //       character: {
+          //         name,
+          //         persona,
+          //       },
+          //       enable_action: action,
+          //       model_id,
+          //       search_engine_id,
+          //       knowledge_base_id: kbId,
+          //       messages: history,
+          //     }),
+          //   },
+          // );
+          console.log('from axios ', response.data);
+          const res = response.data;
+          // const res = await response.json();
+          // console.log('response from ai', res);
 
           const cntnt = history[history.length - 1];
           const msg = this.chatRepo.create({
@@ -94,7 +116,8 @@ export class ChatProcessor extends WorkerHost {
           //   response: res.response,
           // });
           console.log('cSessionId', cSessionId);
-          cSessionId && this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
+          cSessionId &&
+            this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
 
           // return { ...res, chatId: resp.id };
         } catch (error) {
