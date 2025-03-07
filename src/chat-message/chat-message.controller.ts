@@ -35,6 +35,7 @@ export class ChatMessageController {
     @CurrentUser() session: Session,
     @Res() res: Response,
   ) {
+    console.log('get request recieved!', session.uId, sessionId);
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
