@@ -51,6 +51,7 @@ export class ChatMessageService {
         model_id,
         search_engine_id,
       });
+      console.log("got to job service")
       this.pQueue.on('waiting', (jobId) => {
         console.log(`Job ${jobId} is waiting to be processed`);
       });
@@ -127,7 +128,7 @@ export class ChatMessageService {
 
   sendMessage(sessionId: string, id: number, message: string) {
     const connection = this.clients.get(sessionId) as any;
-    console.log('🔍 Debugging sendMessage:', { sessionId });
+    console.log('🔍 Debugging sendMessage:', { sessionId, connection });
     if (!connection) {
       console.error(`❌ No active SSE client found for session: ${sessionId}`);
       return;

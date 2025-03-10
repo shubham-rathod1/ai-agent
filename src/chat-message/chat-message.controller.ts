@@ -25,6 +25,7 @@ export class ChatMessageController {
   @Post()
   @UseGuards(AuthGuard)
   create(@CurrentUser() session: Session, @Body() createChatMessage: any) {
+    console.log("got chat!")
     return this.chatMessageService.create(session.uId, createChatMessage);
   }
 

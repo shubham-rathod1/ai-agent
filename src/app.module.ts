@@ -27,7 +27,7 @@ import { BullModule } from '@nestjs/bullmq';
           host: configService.get('REDIS_HOST') || 'localhost',
           port: configService.get('REDIS_PORT') || 6380,
           username: configService.get('REDIS_USERNAME') || null,
-          password: configService.get('REDIS_PASSWORD') || "mysecretpassword",
+          password: configService.get('REDIS_PASSWORD') || null,
         },
       }),
       inject: [ConfigService],
