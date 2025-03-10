@@ -10,8 +10,10 @@ import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { Repository } from 'typeorm';
 import { ChatSession } from 'src/chat-session/entities/chat-session.entity';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Queue, QueueEvents } from 'bullmq';
+import { Queue, Worker } from 'bullmq';
 import { Response } from 'express';
+import axios from 'axios';
+import { BrowserType, ModelId } from 'src/helper/enums';
 
 @Injectable()
 export class ChatMessageService {
@@ -22,9 +24,8 @@ export class ChatMessageService {
     @InjectRepository(ChatSession)
     private readonly cSessionRepos: Repository<ChatSession>,
   ) {}
-  private clients = new Map<string, Response>();
+  private clients = new Map<string, Set<Response>>();
   async create(uId: string, createChatMessage: any) {
-    console.log(createChatMessage);
     const {
       cSessionId,
       pId,
@@ -36,7 +37,6 @@ export class ChatMessageService {
       name,
       search_engine_id,
     } = createChatMessage;
-    // const queueEvents = new QueueEvents(this.pQueue);
 
     try {
       const job = await this.pQueue.add('pChat', {
@@ -51,8 +51,16 @@ export class ChatMessageService {
         model_id,
         search_engine_id,
       });
-      // return await this.aiResponse(cSessionId,pId,history);
-      // return { jobId: job.id, message: 'Processing started' };
+      this.pQueue.on('waiting', (jobId) => {
+        console.log(`Job ${jobId} is waiting to be processed`);
+      });
+      this.pQueue.on('error', (err) => {
+        console.error('Redis Client Error:', err);
+      });
+
+      this.pQueue.on('removed', () => {
+        console.error('Redis Client Disconnected');
+      });
       return { sessionId: cSessionId, message: 'Processing started' };
     } catch (error) {
       console.log(error);
@@ -88,88 +96,111 @@ export class ChatMessageService {
   }
 
   async subscribe(sessionId: string, res: Response, uId: string) {
-    const sess = await this.cSessionRepos.findOne({ where: { id: sessionId } });
-    if (!sess) {
-      throw new NotFoundException('session not found'!);
-    }
-    if (sess.uId !== uId)
-      throw new UnauthorizedException(
-        'You are not authorized to join this session!',
-      );
-    this.clients.set(sessionId, res);
-    console.log('clients map', this.clients);
+    try {
+      const sess = await this.cSessionRepos.findOne({
+        where: { id: sessionId },
+      });
+      console.log('sess', sess);
+      if (!sess) {
+        throw new NotFoundException('session not found'!);
+      }
+      if (sess.uId !== uId)
+        throw new UnauthorizedException(
+          'You are not authorized to join this session!',
+        );
+      if (!this.clients.has(sessionId)) {
+        this.clients.set(sessionId, new Set<Response>());
+      }
+      this.clients.get(sessionId)!.add(res);
+      res.write(`data: ${JSON.stringify({ message: 'Connected to SSE' })}\n\n`);
 
-    // Remove connection on client disconnect
-    res.on('close', () => {
-      this.clients.delete(sessionId);
-      res.end();
-    });
+      res.on('close', () => {
+        console.log(`Client disconnected from session: ${sessionId}`);
+        this.clients.get(sessionId)?.delete(res);
+        res.end();
+      });
+    } catch (error) {
+      console.error('Subscription Error:', error);
+      res.status(500).send({ error: 'Subscription failed' });
+    }
   }
 
   sendMessage(sessionId: string, id: number, message: string) {
-    const res = this.clients.get(sessionId);
-    console.log('this is from sendmessage', sessionId, res);
-    if (res) {
-      console.log('sending msg');
-      res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
-      console.log('msg sent ', message);
-    } else {
-      throw new NotFoundException('session does not exist');
+    const connection = this.clients.get(sessionId) as any;
+    console.log('🔍 Debugging sendMessage:', { sessionId });
+    if (!connection) {
+      console.error(`❌ No active SSE client found for session: ${sessionId}`);
+      return;
+    }
+    try {
+      for (const res of connection) {
+        try {
+          res.write(`data: ${JSON.stringify({ response: message, id })}\n\n`);
+          console.log('✅ Message sent:', message);
+        } catch (error) {
+          console.error('❌ Error writing to SSE client:', error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error writing to SSE client:', error);
     }
   }
 
-  // private async aiResponse(
-  //   cSessionId: string,
-  //   pId: number,
-  //   history: any,
-  //   aId: string,
-  //   action: boolean,
-  //   model_id: string,
-  //   search_engine_id: string,
-  // ) {
-  //   try {
-  //     const response = await fetch(
-  //       'https://generation.audiolibrary.ai/sona/kb/api/chat/',
-  //       {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-
-  //         body: JSON.stringify({
-  //           character: {
-  //             name: "Kaoru 'Stormblade' Takahashi",
-  //             persona:
-  //               'A fierce but honorable samurai from a post-apocalyptic world...',
-  //           },
-  //           enable_action: false,
-  //           knowledge_base_id: null,
-  //           model_id: 'llama-3.3-70b-versatile',
-  //           search_engine_id: null,
-  //           messages: history,
-  //         }),
-  //       },
-  //     );
-  //     const res = await response.json();
-  //     const cntnt = history[history.length - 1];
-  //     const msg = this.chatRepo.create({
-  //       cSessionId,
-  //       pId,
-  //       role: ChatRole.USER,
-  //       message: cntnt.content,
-  //     });
-  //     console.log(res);
-  //     await this.chatRepo.save(msg);
-  //     const resp = this.chatRepo.create({
-  //       cSessionId,
-  //       pId: msg.id,
-  //       role: ChatRole.ASSISTANT,
-  //       message: res.response,
-  //     });
-  //     await this.chatRepo.save(resp);
-  //     return { ...res, chatId: resp.id };
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+  async aiResponse(
+    cSessionId: string,
+    pId: string,
+    history: any,
+    kbId: string,
+    persona: string,
+    name: string,
+    action: boolean,
+    model_id: ModelId,
+    search_engine_id: BrowserType,
+  ) {
+    try {
+      const response = await axios.post(
+        'https://generation.audiolibrary.ai/sona/kb/api/chat/',
+        {
+          character: {
+            name,
+            persona,
+          },
+          enable_action: action,
+          model_id,
+          search_engine_id,
+          knowledge_base_id: kbId,
+          messages: history,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
+        },
+      );
+      console.log('axios response', response);
+      return response;
+      // const res = await response.json();
+      // const cntnt = history[history.length - 1];
+      // const msg = this.chatRepo.create({
+      //   cSessionId,
+      //   pId,
+      //   role: ChatRole.USER,
+      //   message: cntnt.content,
+      // });
+      // console.log(res);
+      // await this.chatRepo.save(msg);
+      // const resp = this.chatRepo.create({
+      //   cSessionId,
+      //   pId: msg.id,
+      //   role: ChatRole.ASSISTANT,
+      //   message: res.response,
+      // });
+      // await this.chatRepo.save(resp);
+      // return { ...res, chatId: resp.id };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }

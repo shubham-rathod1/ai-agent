@@ -14,10 +14,15 @@ import { ChatGateway } from './chat.gateway';
     TypeOrmModule.forFeature([ChatMessage, Session, ChatSession]),
     BullModule.registerQueue({
       name: '1v1Chat',
+      defaultJobOptions: {
+        attempts: 5,
+        backoff: { type: 'exponential', delay: 1000 },
+        removeOnComplete: true,
+        removeOnFail: 100,
+      },
     }),
   ],
   controllers: [ChatMessageController],
-  providers: [ChatMessageService,ChatProcessor,ChatGateway],
-  // providers: [ChatMessageService],
+  providers: [ChatMessageService, ChatProcessor, ChatGateway],
 })
 export class ChatMessageModule {}

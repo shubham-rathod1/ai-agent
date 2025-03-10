@@ -12,7 +12,6 @@ import { UsersModule } from './users/users.module';
 import { ChatSessionModule } from './chat-session/chat-session.module';
 import { ChatMessageModule } from './chat-message/chat-message.module';
 import { BullModule } from '@nestjs/bullmq';
-import { GrpMessageModule } from './grp-message/grp-message.module';
 
 @Module({
   imports: [
@@ -25,10 +24,10 @@ import { GrpMessageModule } from './grp-message/grp-message.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         connection: {
-          host: configService.get('REDIS_HOST'),
-          port: configService.get('REDIS_PORT'),
-          username: configService.get('REDIS_USERNAME'),
-          password: configService.get('REDIS_PASSWORD'),
+          host: configService.get('REDIS_HOST') || 'localhost',
+          port: configService.get('REDIS_PORT') || 6380,
+          username: configService.get('REDIS_USERNAME') || null,
+          password: configService.get('REDIS_PASSWORD') || "mysecretpassword",
         },
       }),
       inject: [ConfigService],
@@ -54,11 +53,8 @@ import { GrpMessageModule } from './grp-message/grp-message.module';
     UploadModule,
     AuthModule,
     UsersModule,
-    // SubscriptionModule,
-    // ApiKeyModule,
     ChatSessionModule,
     ChatMessageModule,
-    // GrpMessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

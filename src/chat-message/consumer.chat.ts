@@ -3,7 +3,6 @@ import { Job } from 'bullmq';
 import { Repository } from 'typeorm';
 import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatGateway } from './chat.gateway';
 import { ChatMessageService } from './chat-message.service';
 import axios from 'axios';
 
@@ -13,14 +12,15 @@ export class ChatProcessor extends WorkerHost {
     @InjectRepository(ChatMessage)
     private readonly chatRepo: Repository<ChatMessage>,
     private readonly chatService: ChatMessageService,
-    private readonly chatGateway: ChatGateway,
   ) {
     super();
+    console.log('ChatProcessor Worker started!');
   }
   async process(job: Job) {
+    console.log(`Processing job ${job.id} of type ${job.name}`);
+
     switch (job.name) {
       case 'pChat': {
-        console.log('it ran from consumer');
         const {
           cSessionId,
           pId,
@@ -32,43 +32,19 @@ export class ChatProcessor extends WorkerHost {
           model_id,
           search_engine_id,
         } = job.data;
-        // business logic here;
-        console.log(
-          'from worker',
-          JSON.stringify({
-            character: {
-              name: "Kaoru 'Stormblade' Takahashi",
-              persona:
-                'A fierce but honorable samurai from a post-apocalyptic world...',
-            },
-            enable_action: action,
+
+        try {
+          const response = await this.chatService.aiResponse(
+            cSessionId,
+            pId,
+            history,
+            kbId,
+            persona,
+            name,
+            action,
             model_id,
             search_engine_id,
-            knowledge_base_id: null,
-            messages: history,
-          }),
-        );
-        try {
-          const response = await axios.post(
-            'https://generation.audiolibrary.ai/sona/kb/api/chat/',
-            {
-              character: {
-                name,
-                persona,
-              },
-              enable_action: action,
-              model_id,
-              search_engine_id,
-              knowledge_base_id: kbId,
-              messages: history,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            },
           );
-          console.log('from axios ', response.data);
           const res = response.data;
 
           const cntnt = history[history.length - 1];
@@ -87,15 +63,8 @@ export class ChatProcessor extends WorkerHost {
           });
           await this.chatRepo.save(aiResp);
 
-          // this.chatGateway.sendToUser(uId, 'chatResponse', {
-          //   chatId: aiResp.id,
-          //   response: res.response,
-          // });
-          console.log('cSessionId', cSessionId);
           cSessionId &&
             this.chatService.sendMessage(cSessionId, aiResp.id, res.response);
-
-          // return { ...res, chatId: resp.id };
         } catch (error) {
           console.log(error);
         }
