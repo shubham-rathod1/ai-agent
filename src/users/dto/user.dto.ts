@@ -7,10 +7,13 @@ import {
   IsUrl,
   MinLength,
   Matches,
+  ValidateNested,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 import { SignatureType } from 'src/helper/enums';
+import { SocialProfileDto } from './social.dto';
+import { ProfilePhotoDto } from './profile.dto';
 
 // export class CreateUserDto {
 //   @IsUUID()
@@ -81,33 +84,24 @@ export class UpdateUserDto {
   email?: string;
 
   @IsOptional()
-  @IsObject()
-  @IsUrl()
-  img?: {
-    pro?: string;
-    cvr?: string;
-  };
+  @ValidateNested()
+  @Type(() => ProfilePhotoDto)
+  img?: ProfilePhotoDto;
 
   @IsOptional()
-  @IsObject()
-  telegram?: {
-    id: string;
-    username: string;
-  };
+  @ValidateNested()
+  @Type(() => SocialProfileDto)
+  telegram?: SocialProfileDto;
 
   @IsOptional()
-  @IsObject()
-  discord?: {
-    id: string;
-    username: string;
-  };
+  @ValidateNested()
+  @Type(() => SocialProfileDto)
+  discord?: SocialProfileDto;
 
   @IsOptional()
-  @IsObject()
-  x?: {
-    id: string;
-    username: string;
-  };
+  @ValidateNested()
+  @Type(() => SocialProfileDto)
+  x?: SocialProfileDto;
 
   @IsOptional()
   cta?: Date;

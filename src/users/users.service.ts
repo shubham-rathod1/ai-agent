@@ -46,7 +46,7 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-  // check username Exist or Not
+
   async findByUName(uName: string): Promise<boolean> {
     const user = await this.uRepository.findOne({ where: { uName } });
     if (!user) {
