@@ -12,8 +12,8 @@ import {
 import { Type, Transform } from 'class-transformer';
 
 import { SignatureType } from 'src/helper/enums';
-import { SocialProfileDto } from './social.dto';
-import { ProfilePhotoDto } from './profile.dto';
+import { SocialProfileDto } from '../../helper/types';
+import { ProfilePhotoDto } from '../../helper/types';
 
 // export class CreateUserDto {
 //   @IsUUID()

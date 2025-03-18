@@ -6,7 +6,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   Matches,
+  MaxLength,
+  MinLength,
   Validate,
   ValidateIf,
   ValidateNested,
@@ -51,7 +54,31 @@ export class Token {
 export class KbQuery {
   @IsArray()
   @ArrayNotEmpty()
-  @IsInt({ each: true })   // Ensures all elements are integers
-  @Type(() => Number)      // Converts from string to number
+  @IsInt({ each: true }) // Ensures all elements are integers
+  @Type(() => Number) // Converts from string to number
   ids: number[];
+}
+
+export class SocialProfileDto {
+  @IsString()
+  @MinLength(3)
+  @MaxLength(30)
+  id: string;
+
+  @IsString()
+  @MinLength(3)
+  @MaxLength(30)
+  username: string;
+}
+
+export class ProfilePhotoDto {
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  pro?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  cvr?: string;
 }
