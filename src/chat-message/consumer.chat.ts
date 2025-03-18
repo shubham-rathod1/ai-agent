@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ChatMessage, ChatRole } from './entities/chat-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatMessageService } from './chat-message.service';
-import axios from 'axios';
+// import axios from 'axios';
 
 @Processor('1v1Chat')
 export class ChatProcessor extends WorkerHost {

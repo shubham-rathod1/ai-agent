@@ -6,9 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-
+import { UpdateUserDto } from './dto/user.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -24,12 +28,16 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: any) {
+  @UseGuards(AuthGuard)
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Get('checkusername/:uname')
+  findByUName(@Param('uname') uName: string) {
+    if (!uName) {
+      throw new BadRequestException('Username is required');
+    }
+    return this.usersService.findByUName(uName);
   }
 }

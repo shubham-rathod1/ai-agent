@@ -36,7 +36,8 @@ export class UsersService {
       if (!user) {
         throw new NotFoundException('User does not exist!');
       }
-      return await this.uRepository.update(id, updateUserDto);
+      const updatedData = await this.uRepository.update(id, updateUserDto);
+      return { message: 'Update Data Successfully' };
     } catch (error) {
       throw error;
     }
@@ -44,5 +45,13 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async findByUName(uName: string): Promise<boolean> {
+    const user = await this.uRepository.findOne({ where: { uName } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return !!user;
   }
 }
