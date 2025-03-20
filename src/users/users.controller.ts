@@ -9,6 +9,7 @@ import {
   Query,
   BadRequestException,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
@@ -39,5 +40,27 @@ export class UsersController {
       throw new BadRequestException('Username is required');
     }
     return this.usersService.findByUName(uName);
+  }
+
+  @Post('verifytoken')
+  async twitterCallback(
+    @Body('code') code: string,
+    @Body('name') name: string,
+    @Body('type') type: string,
+    @Body('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.usersService.verifyCodeToken(
+        code,
+        name,
+        type,
+        id,
+      );
+      return data.user;
+    } catch (error) {
+      console.error('Error in social verification:', error);
+      return error;
+    }
   }
 }
