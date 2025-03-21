@@ -75,7 +75,7 @@ export class UsersService {
     }
   }
 
-  async codeXToken(code: string, id: string, type: string) {
+  private async codeXToken(code: string, id: string, type: string) {
     try {
       const clientId = this.configService.get<string>('X_CLIENT_ID');
       const clientSecret = this.configService.get<string>('X_CLIENT_SECRET');
