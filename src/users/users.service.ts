@@ -6,11 +6,13 @@ import { ConfigService } from '@nestjs/config';
 // import { CreateUserDto } from './dto/user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import axios from 'axios';
+import { Agent } from '../agent/entities/agent.entity';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly uRepository: Repository<User>,
     private readonly configService: ConfigService,
+    @InjectRepository(Agent) private readonly aRepository: Repository<Agent>,
   ) {}
   async create(uName: string, manager: EntityManager) {
     try {
@@ -105,14 +107,31 @@ export class UsersService {
           headers: { Authorization: `Bearer ${access_token}` },
         },
       );
-      console.log('discord data', userProfile.data);
-
-      return {
-        user: {
-          id: userProfile.data.data.id,
-          username: userProfile.data.data.username,
-        },
+      const xData = {
+        id: userProfile.data.data.id,
+        username: userProfile.data.data.username,
       };
+
+      let user: any;
+      if (type === 'user') {
+        user = await this.uRepository.findOne({ where: { id } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+
+        user.x = xData;
+        await this.uRepository.save(user);
+      } else {
+        user = await this.aRepository.findOne({ where: { id } });
+        if (!user) {
+          throw new NotFoundException('Agent not found');
+        }
+
+        user.x = xData;
+        await this.aRepository.save(user);
+      }
+
+      return { message: 'Agent X data updated successfully', user };
     } catch (error) {
       console.error('Error in codeXToken:', error);
       throw new Error('Failed to authenticate with Twitter');
@@ -155,14 +174,21 @@ export class UsersService {
           },
         },
       );
-      const user = userResponse.data;
-      console.log('discord data', user);
-      return {
-        user: {
-          id: user.id,
-          username: user.username,
-        },
+
+      const discordData = {
+        id: userResponse.data.id,
+        username: userResponse.data.username,
       };
+
+      let user = await this.uRepository.findOne({ where: { id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      user.discord = discordData;
+      await this.uRepository.save(user);
+
+      return { message: 'User Discord data updated successfully', user };
     } catch (error) {
       console.error('Error in codeDiscordToken:', error);
       throw new Error('Failed to authenticate with Discord');
