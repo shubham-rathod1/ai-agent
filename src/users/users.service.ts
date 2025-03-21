@@ -65,7 +65,7 @@ export class UsersService {
       if (name === 'x') {
         return await this.codeXToken(code, id, type);
       } else if (name === 'discord') {
-        return await this.codeDiscordToken(code, id, type);
+        return await this.codeDiscordToken(code, id);
       } else {
         throw new Error('Unsupported social platform');
       }
@@ -75,12 +75,14 @@ export class UsersService {
     }
   }
 
-  private async codeXToken(code: string, id: string, type: string) {
+  async codeXToken(code: string, id: string, type: string) {
     try {
       const clientId = this.configService.get<string>('X_CLIENT_ID');
       const clientSecret = this.configService.get<string>('X_CLIENT_SECRET');
       const redirectUri = this.configService.get<string>('X_REDIRECT_URI');
-      const credentials = btoa(`${clientId}:${clientSecret}`);
+      const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString(
+        'base64',
+      );
       const code_verifier = this.configService.get<string>('CODE_VERIFIER');
 
       const tokenResponse = await axios.post(
@@ -107,12 +109,14 @@ export class UsersService {
           headers: { Authorization: `Bearer ${access_token}` },
         },
       );
+
       const xData = {
         id: userProfile.data.data.id,
         username: userProfile.data.data.username,
       };
 
-      let user: any;
+      let user: User | null = null;
+
       if (type === 'user') {
         user = await this.uRepository.findOne({ where: { id } });
         if (!user) {
@@ -121,24 +125,27 @@ export class UsersService {
 
         user.x = xData;
         await this.uRepository.save(user);
-      } else {
-        user = await this.aRepository.findOne({ where: { id } });
-        if (!user) {
+        return { message: 'Agent X data updated successfully', user };
+      } else if (type === 'agent') {
+        let agent: Agent | null = null;
+        agent = await this.aRepository.findOne({ where: { id } });
+        if (!agent) {
           throw new NotFoundException('Agent not found');
         }
 
-        user.x = xData;
-        await this.aRepository.save(user);
+        agent.x = xData;
+        await this.aRepository.save(agent);
+        return { message: 'Agent X data updated successfully', agent };
       }
 
-      return { message: 'Agent X data updated successfully', user };
+      throw new NotFoundException(`Invalid type: ${type}`);
     } catch (error) {
       console.error('Error in codeXToken:', error);
-      throw new Error('Failed to authenticate with Twitter');
+      throw new Error('Failed to authenticate with Twitter and update user');
     }
   }
 
-  private async codeDiscordToken(code: string, id: string, type: string) {
+  private async codeDiscordToken(code: string, id: string) {
     try {
       const clientId = this.configService.get<string>('DISCORD_CLIENT_ID');
       const clientSecret = this.configService.get<string>(
@@ -174,7 +181,6 @@ export class UsersService {
           },
         },
       );
-
       const discordData = {
         id: userResponse.data.id,
         username: userResponse.data.username,
@@ -188,7 +194,7 @@ export class UsersService {
       user.discord = discordData;
       await this.uRepository.save(user);
 
-      return { message: 'User Discord data updated successfully', user };
+      return { message: 'Discord data updated successfully', user };
     } catch (error) {
       console.error('Error in codeDiscordToken:', error);
       throw new Error('Failed to authenticate with Discord');
