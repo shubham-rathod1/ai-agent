@@ -59,9 +59,8 @@ export class UsersService {
     return !!user;
   }
 
-  async verifyCodeToken(code: string, name: string, id: string, type: string) {
+  async vToken(code: string, name: string, id: string, type: string) {
     try {
-      console.log('data', type, code, id, name);
       if (name === 'x') {
         return await this.codeXToken(code, id, type);
       } else if (name === 'discord') {

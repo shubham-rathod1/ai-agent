@@ -14,6 +14,9 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { Response } from 'express';
+import { CurrentUser } from 'src/decorators/currentUser.decorator';
+import { Session } from 'src/auth/entities/auth.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -43,24 +46,10 @@ export class UsersController {
   }
 
   @Post('verifytoken')
-  async twitterCallback(
-    @Body('code') code: string,
-    @Body('name') name: string,
-    @Body('type') type: string,
-    @Body('id') id: string,
-    @Res() res: Response,
-  ) {
-    try {
-      const data = await this.usersService.verifyCodeToken(
-        code,
-        name,
-        id,
-        type,
-      );
-      return data.user;
-    } catch (error) {
-      console.error('Error in social verification:', error);
-      return error;
-    }
+  @UseGuards(AuthGuard)
+  async twitterCallback(@Body() body: any, @CurrentUser() session: Session) {
+    const { uId } = session;
+    const { code, name, type } = body;
+    return await this.usersService.vToken(code, name, uId, type);
   }
 }
