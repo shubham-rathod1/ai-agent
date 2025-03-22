@@ -54,8 +54,8 @@ export class UsersController {
       const data = await this.usersService.verifyCodeToken(
         code,
         name,
-        type,
         id,
+        type,
       );
       return data.user;
     } catch (error) {
