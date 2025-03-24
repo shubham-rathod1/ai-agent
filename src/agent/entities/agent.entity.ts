@@ -24,6 +24,8 @@ export class Agent {
   uId: string;
   @Column({ unique: true })
   name: string;
+  @Column({ default: 'private' })
+  interfaceType: string;
   @Column()
   model_id: ModelId;
   @Column()

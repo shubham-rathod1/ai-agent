@@ -37,6 +37,9 @@ export class AgentDto {
   @MinLength(3)
   name: string;
 
+  @IsString()
+  interfaceType: string;
+
   @IsNotEmpty()
   @IsString()
   pic: string;

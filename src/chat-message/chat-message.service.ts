@@ -181,24 +181,6 @@ export class ChatMessageService {
       );
       console.log('axios response', response);
       return response;
-      // const res = await response.json();
-      // const cntnt = history[history.length - 1];
-      // const msg = this.chatRepo.create({
-      //   cSessionId,
-      //   pId,
-      //   role: ChatRole.USER,
-      //   message: cntnt.content,
-      // });
-      // console.log(res);
-      // await this.chatRepo.save(msg);
-      // const resp = this.chatRepo.create({
-      //   cSessionId,
-      //   pId: msg.id,
-      //   role: ChatRole.ASSISTANT,
-      //   message: res.response,
-      // });
-      // await this.chatRepo.save(resp);
-      // return { ...res, chatId: resp.id };
     } catch (error) {
       console.log(error);
       throw error;
